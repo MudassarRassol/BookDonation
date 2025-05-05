@@ -50,25 +50,33 @@ export async function PUT(
     }
 
     // Prepare update data
-    const updateData: any = {
+    const updateData: {
+      title: FormDataEntryValue | null;
+      author: FormDataEntryValue | null;
+      condition: FormDataEntryValue | null;
+      description: FormDataEntryValue | null;
+      Category: FormDataEntryValue | null;
+      updatedAt: Date;
+      bookimg?: string;
+    } = {
       title,
       author,
       condition,
       description,
-      Category : category,
+      Category: category,
       updatedAt: new Date()
     };
 
     // Handle image upload if new image provided
     if (bookimg) {
-      const imageUrl = await UploadImage(bookimg, "image-upload");
+      const imageUrl = await UploadImage(bookimg, "image-upload") as string;
       if (!imageUrl) {
         return NextResponse.json(
           { message: "Image upload failed" },
           { status: 400 }
         );
       }
-      updateData.bookimg = imageUrl;
+      updateData.bookimg = String(imageUrl);
     }
 
     // Update book

@@ -16,6 +16,7 @@ export async function GET() {
     });
 
   } catch (error) {
+    console.error(error); // Log the error for debugging
     return NextResponse.json({
       success: false,
       error: "Failed to fetch stats"

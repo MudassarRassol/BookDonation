@@ -14,7 +14,8 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '8');
     const page = parseInt(searchParams.get('page') || '1');
 
-    const query: any = { status };
+const query: Record<string, unknown> = { status };
+
     if (condition) query.condition = condition;
     if (search) {
       query.$or = [
