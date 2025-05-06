@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ant-design/charts": "^2.2.7",
+    "@ant-design/charts": "^1.4.3",
     "@ant-design/compatible": "^5.1.4",
     "@ant-design/icons": "^6.0.0",
     "@hookform/resolvers": "^4.1.3",

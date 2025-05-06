@@ -88,7 +88,11 @@ const Page = () => {
 
   return (
     <>
-      {routeLoading && <BookLoader />}
+      {routeLoading && 
+      <div className="w-full h-[100vh] flex items-center justify-center" >
+            <BookLoader />
+      </div>
+      }
       {
         !routeLoading   && 
         <div className="w-full h-[80vh] md:h-[89vh] overflow-hidden flex justify-center items-center">
