@@ -33,6 +33,6 @@ export const config = {
     "/api/book/getreceipentrecent/:path*" ,  "/api/auth/emailvarification/:path*" ,
     "/api/request/bookrequest/:path*", "/api/donation/request/:path*","/api/donation/myrequest/:path*",
     "/api/donation/donationhistory/:path*",
-    "/api/book/getallbooks/:path*",  "/api/allfav/:path*",
+    "/api/book/getallbooks/:path*",  "/api/allfav/:path*"
    ] // Add protected routes
 };

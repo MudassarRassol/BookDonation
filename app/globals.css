@@ -66,3 +66,31 @@
   display: block;
   padding-bottom: 30px;
 } */
+
+
+:where(.css-dev-only-do-not-override-tjsggz).ant-carousel .slick-dots li{
+    background: black;
+    opacity: 1;
+    transition: all .3s ease-in-out;
+}
+
+:where(.css-dev-only-do-not-override-tjsggz).ant-carousel .slick-dots li.slick-active{
+    background: #f00;
+    opacity: 1;
+    transition: all .3s ease-in-out;
+}
+:where(.css-dev-only-do-not-override-tjsggz).ant-carousel .slick-dots li.slick-active:before{
+    background: #f00;
+    opacity: 1;
+    transition: all .3s ease-in-out;
+}
+:where(.css-dev-only-do-not-override-tjsggz).ant-carousel .slick-dots li:before{
+    background: black;
+    opacity: 1;
+    transition: all .3s ease-in-out;
+}
+:where(.css-dev-only-do-not-override-tjsggz).ant-carousel .slick-dots li.slick-active:after{
+    background: #f00;
+    opacity: 1;
+    transition: all .3s ease-in-out;
+}

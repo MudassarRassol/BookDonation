@@ -15,7 +15,7 @@ const Homevideo = () => {
       alt="Stock Cake-Books Awaiting Readers"
       layout="fill"
       objectFit="cover"
-      className='h-screen'
+      className='h-[80vh] md:h-screen w-full object-cover'
       />
     </div>
     
