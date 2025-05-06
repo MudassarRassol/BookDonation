@@ -14,6 +14,7 @@ interface Book {
   condition: string;
   status: string;
   description: string;
+  Category: string;
   userId: {
     username: string;
     city: string;
@@ -39,7 +40,6 @@ export default function AllBooksPage() {
     total: 0
   });
 
-
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -54,17 +54,16 @@ export default function AllBooksPage() {
         if (filters.condition) params.append('condition', filters.condition);
     
         const response = await axios.get(`/api/book/guestallbooks?${params.toString()}`);
-        const data =  response.data;
-        console.log(data)
+        const data = response.data;
+        
         if (response.status === 200) {
           setBooks(data.data || []);
-          console.log(books)
           setPagination(prev => ({
             ...prev,
-            total: data.data.pagination?.total || 0
+            total: data.pagination?.total || 0
           }));
         } else {
-          throw new Error(data.data.message || 'Failed to load books');
+          throw new Error(data.message || 'Failed to load books');
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load books');
@@ -78,7 +77,7 @@ export default function AllBooksPage() {
     }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [pagination.page, searchQuery, filters.condition, filters.status]);
+  }, [pagination.page, pagination.limit, searchQuery, filters.condition, filters.status]);
 
   const handlePageChange = (page: number) => {
     setPagination(prev => ({ ...prev, page }));
@@ -166,31 +165,26 @@ export default function AllBooksPage() {
         </Row>
       </div>
 
-{books.length === 0 ? (
+      {books.length === 0 ? (
         <Empty description="No books found matching your criteria" />
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-            {books && books.map((book) => (
+            {books.map((book) => (
               <BookCard 
                 key={book._id} 
-                book={{
-                  ...book,
-                  username: book.userId?.username,
-                  city: book.userId?.city,
-                  profilephoto: book.userId?.profilephoto
-                }} 
+                book={book}
               />
             ))}
           </div>
           
           <Pagination
-              current={pagination.page}
-              pageSize={pagination.limit}
-              total={pagination.total}
-              onChange={handlePageChange}
-              showSizeChanger={false}
-            />
+            current={pagination.page}
+            pageSize={pagination.limit}
+            total={pagination.total}
+            onChange={handlePageChange}
+            showSizeChanger={false}
+          />
         </>
       )}
     </div>

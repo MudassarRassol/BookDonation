@@ -133,6 +133,7 @@ const Page = () => {
 
           {/* Role Selection */}
           <select
+            title="Select Role"
             value={data.role}
             onChange={handleChange}
             name="role"

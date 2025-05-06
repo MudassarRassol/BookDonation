@@ -34,7 +34,7 @@ const UpperNavbar = () => {
     
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [dispatch, Info, router,login]);
+  }, [dispatch, Info, router, login, role]);
 
   const logout = async () => {
     try {

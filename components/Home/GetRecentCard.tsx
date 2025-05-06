@@ -18,26 +18,28 @@ const GetRecentBOOK = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchBooks = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        role === 'donor' 
-          ? "/api/book/getdonorrecent" 
-          : role === 'recipient' 
-            ? '/api/book/getreceipentrecent' 
-            : '/api/book/getguestrecent'
-      );
-      setBooks(response.data.books || []);
-    } catch (err) {
-      console.error("Failed to fetch books:", err);
-      setError(err instanceof Error ? err.message : "Failed to load books");
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          role === 'donor' 
+            ? "/api/book/getdonorrecent" 
+            : role === 'recipient' 
+              ? '/api/book/getreceipentrecent' 
+              : '/api/book/getguestrecent'
+        );
+        console.log(response)
+        setBooks(response.data.books || []);
+      } catch (err) {
+        console.error("Failed to fetch books:", err);
+        setError(err instanceof Error ? err.message : "Failed to load books");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchBooks();
   }, [role]); // Add role as dependency
 
@@ -95,7 +97,7 @@ const GetRecentBOOK = () => {
           spaceBetween={20}
           pagination={{ clickable: true }}
           modules={[Pagination]}
-          className="book-swiper"
+          className="book-swiper pb-[30px]"
           breakpoints={{
             375: {
               slidesPerView: 1.3,
@@ -116,7 +118,7 @@ const GetRecentBOOK = () => {
           }}
         >
           {books.map((book, index) => (
-            <SwiperSlide key={index} className="!h-auto">
+            <SwiperSlide key={index} className="!h-auto pb-[32px] md:pb-0 ">
               <BookCard book={book} />
             </SwiperSlide>
           ))}

@@ -14,6 +14,7 @@ interface Book {
   condition: string;
   status: string;
   description: string;
+  Category: string;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -53,7 +54,7 @@ export default function AllBooksPage() {
     };
 
     fetchBooks();
-  }, [pagination.page]);
+  }, [pagination.page, pagination.limit]);
 
   const handlePageChange = (page: number) => {
     setPagination(prev => ({ ...prev, page }));
@@ -90,8 +91,8 @@ export default function AllBooksPage() {
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-            {books.map((book) => (
-              <BookCard key={book._id} book={book} />
+            {books.map((books) => (
+              <BookCard key={books._id} book={books} />
             ))}
           </div>
           

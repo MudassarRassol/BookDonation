@@ -93,7 +93,7 @@ const UserManagementTable = () => {
       title: 'Profile',
       dataIndex: 'profile',
       key: 'profile',
-      render: (_: any, record: User) => (
+      render: (_: unknown, record: User) => (
         <div className="flex items-center">
           <Avatar 
             src={record.userdetailsId?.profilephoto} 
@@ -122,7 +122,7 @@ const UserManagementTable = () => {
     {
       title: 'Role',
       key: 'role',
-      render: (_: any, record: User) => (
+      render: (_: unknown, record: User) => (
         <Tag color={
           record.userdetailsId?.role === 'admin' ? 'red' : 
           record.userdetailsId?.role === 'donor' ? 'blue' : 'green'
@@ -134,14 +134,14 @@ const UserManagementTable = () => {
     {
       title: 'City',
       key: 'city',
-      render: (_: any, record: User) => (
+      render: (_: unknown, record: User) => (
         <span>{record.userdetailsId?.city || 'N/A'}</span>
       ),
     },
     {
       title: 'Action',
       key: 'action',
-      render: (_: any, record: User) => (
+      render: (_: unknown, record: User) => (
         <Button 
           type="link" 
           icon={<EyeOutlined />} 

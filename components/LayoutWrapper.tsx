@@ -1,27 +1,22 @@
-// components/LayoutWrapper.tsx
-'use client';
-
-import UpperNavber from "@/components/Navber/UpperNavber";
-import BottomNavber from "@/components/Navber/BottomNavber";
-import AdminDashboard from "./Admin";
-import { useEffect, useState } from "react";
+// src/components/LayoutWrapper.tsx
+"use client"
 import { Spin } from "antd";
+import dynamic from 'next/dynamic';
+import { useUserRole } from '@/components/useUserRole';
+
+// Dynamically import client-side only components
+const UpperNavbar = dynamic(() => import("@/components/Navber/UpperNavber"), { ssr: false });
+const BottomNavbar = dynamic(() => import("@/components/Navber/BottomNavber"), { ssr: false });
+const AdminDashboard = dynamic(() => import("./Admin"), { ssr: false });
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true); // Initialize as true
+  const { isAdmin, isLoading } = useUserRole();
 
-  useEffect(() => {
-    const role = localStorage.getItem("role");
-    setIsAdmin(role === "admin");
-    setLoading(false); // Set loading to false after checking role
-  }, []);
-
-  if (loading) {
+  if (isLoading || isAdmin === null) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen">
         <Spin size="large" className="text-blue-500" />
-        <p className="mt-4 text-lg">Loading...</p>
+        <p className="mt-4 text-lg">Loading application...</p>
       </div>
     );
   }
@@ -36,9 +31,9 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
   return (
     <div className="flex flex-col min-h-screen">
-      <UpperNavber />
+      <UpperNavbar />
       <main className="flex-grow">{children}</main>
-      <BottomNavber />
+      <BottomNavbar />
     </div>
   );
 }

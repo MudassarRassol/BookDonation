@@ -17,6 +17,7 @@ import {
   setCity,
   loadFromLocalStorage 
 } from "@/app/redux/counterSlice";
+import BookLoader from "@/components/Loader/Loader";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const Page = () => {
   const [data, setData] = useState({ email: "", password: "" });
   const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [routeLoading, setRouteLoading] = useState<boolean>(false);
 
   // Load from localStorage when component mounts
   useEffect(() => {
@@ -37,6 +39,7 @@ const Page = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setRouteLoading(true);
 
     const formData = new FormData();
     formData.append("email", data.email);
@@ -53,7 +56,7 @@ const Page = () => {
         dispatch(setInfo(response.data.user.info));
         
         if (response.data.user.info === false) {
-          router.push("/pages/userdetails/get-user-details");
+          await router.push("/pages/userdetails/get-user-details");
         } else {
           dispatch(setImage(response.data.res.profilephoto));
           dispatch(setRole(response.data.res.role));
@@ -61,9 +64,9 @@ const Page = () => {
           
           const role = response.data.res.role;
           if (role === "admin") {
-            router.push("/pages/admin");
+            await router.push("/pages/admin");
           } else {
-            router.push("/");
+            await router.push("/");
           }
         }
       }
@@ -79,32 +82,39 @@ const Page = () => {
       }
     } finally {
       setLoading(false);
+      setRouteLoading(false);
     }
   };
 
   return (
-    <div className="w-full h-[80vh] md:h-[89vh] overflow-hidden flex justify-center items-center">
-      <div className="flex flex-col w-[450px] border-b-2 p-4 shadow-2xl justify-center md:mt-40">
-        <h1 className="text-xl text-center text-gray-800 font-bold mb-8 mt-3 w-full">
-          Sign-in to Book Donation
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <Input name="email" placeholder="Enter Your Email" value={data.email} onChange={handleChange} />
-          <PasswordInput name="password" placeholder="Enter Your Password" onChange={handleChange} value={data.password} />
-          <Link className="mt-2 text-sm" href="/pages/forget-password">
-            Forgot Password?
-          </Link>
-          {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
-          <Button type="submit" text="Login" loading={loading} disabled={loading} />
-        </form>
-        <p className="text-center text-gray-600 mt-8 mb-2 w-full">
-          {`Don't`} have an account?
-          <Link className="mr-2 px-2 text-blue-500 cursor-pointer" href="/pages/sign-up">
-            Sign up
-          </Link>
-        </p>
-      </div>
-    </div>
+    <>
+      {routeLoading && <BookLoader />}
+      {
+        !routeLoading   && 
+        <div className="w-full h-[80vh] md:h-[89vh] overflow-hidden flex justify-center items-center">
+        <div className="flex flex-col w-[450px] border-b-2 p-4 shadow-2xl justify-center md:mt-40">
+          <h1 className="text-xl text-center text-gray-800 font-bold mb-8 mt-3 w-full">
+            Sign-in to Book Donation
+          </h1>
+          <form onSubmit={handleSubmit} className="flex flex-col">
+            <Input name="email" placeholder="Enter Your Email" value={data.email} onChange={handleChange} />
+            <PasswordInput name="password" placeholder="Enter Your Password" onChange={handleChange} value={data.password} />
+            <Link className="mt-2 text-sm" href="/pages/forget-password">
+              Forgot Password?
+            </Link>
+            {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+            <Button type="submit" text="Login" loading={loading} disabled={loading || routeLoading} />
+          </form>
+          <p className="text-center text-gray-600 mt-8 mb-2 w-full">
+            {`Don't`} have an account?
+            <Link className="mr-2 px-2 text-blue-500 cursor-pointer" href="/pages/sign-up">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>  
+      }
+    </>
   );
 };
 

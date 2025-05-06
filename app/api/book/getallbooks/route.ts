@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
     // Get query parameters
     const { searchParams } = new URL(req.url);
     const id = req.headers.get("userid");
+
     let role;
     if(!id){
       role = "guest"; // Default to 'guest' if no user found
@@ -74,9 +75,11 @@ export async function GET(req: NextRequest) {
     let  recipientBooks;
 
     if (role === 'recipient') {
+      const userId = req.headers.get("userId");
       console.log("Recipient role detected, filtering books by city.");
       console.log(books[0].userId.userdetailsId.city , user?.userdetailsId.city);
-       recipientBooks = books.filter((book) => book.userId.userdetailsId.city === user?.userdetailsId.city);
+       recipientBooks = books.filter((book) => book.userId.userdetailsId.city === user?.userdetailsId.city && book.userId._id.toString() !== userId?.toString());
+      // recipientBooks = books.filter((book) => book.userId && user?.userdetailsId?.city && book.userId.userdetailsId.city === user.userdetailsId.city && userId && book.userId._id.toString() !== userId.toString());
     }
 
     return NextResponse.json({

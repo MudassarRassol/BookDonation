@@ -146,7 +146,7 @@ const BottomNavbar = () => {
           `fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md border border-b-0 z-50 shadow-lg bg-white rounded-t-2xl
           ${role === "admin" ? 'hidden' : ''}`
         }
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }} // ✅ Safe area inset for mobile
+        // style={{ paddingBottom: "env(safe-area-inset-bottom)" }} // ✅ Safe area inset for mobile
       >
         <div className="flex justify-between  rounded-t-2xl overflow-hidden">
           {menuItems.map((item, index) => (

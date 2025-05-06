@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Tabs, Table, Tag, Spin, Avatar, Input, Select, Space, Button, DatePicker } from 'antd';
+import { Card, Tabs, Table, Tag, Avatar, Input, Select, Space, Button, DatePicker } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import BookLoader from '@/components/Loader/Loader';
 import axios from 'axios';
@@ -30,7 +30,7 @@ export default function AllDonationsPage() {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [searchText, setSearchText] = useState('');
-  const [dateFilter, setDateFilter] = useState<any>(null);
+  const [dateFilter, setDateFilter] = useState<dayjs.Dayjs | null>(null);
   const [donorFilter, setDonorFilter] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function AllDonationsPage() {
         const res = await axios.get('/api/admin/alldonation');
         console.log(res.data.data);
         setDonations(res.data.data);
-      } catch (err) {
+      } catch {
         setError('Failed to fetch donations');
       } finally {
         setLoading(false);

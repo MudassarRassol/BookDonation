@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -66,33 +66,26 @@ export default function BookDetailsPage() {
   const { role, login, varify, userid } = useSelector(
     (state: RootState) => state.user
   );
-  console.log(role, login, varify, userid);
-  const fetchBook = async () => {
+
+  const fetchBook = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get(`/api/book/bookdetailsbyid/${id}`);
-
-      console.log("1");
 
       if (response.status === 200) {
         const bookData = response.data.data;
 
         if (localStorage.getItem("login")) {
           try {
-            console.log("run ");
             const favResponse = await axios.post(`/api/check`, {
               data: {
                 bookId: id,
                 userId: localStorage.getItem("userid"),
               },
             });
-            console.log(favResponse);
-            console.log(favResponse);
             bookData.isFavorite = favResponse.data.isFavorite;
           } catch (favError) {
-            toast.error(
-              response.data.message || "Failed to check favorite status"
-            );
+            toast.error("Failed to check favorite status");
             console.error("Error checking favorite status:", favError);
             bookData.isFavorite = false;
           }
@@ -112,13 +105,13 @@ export default function BookDetailsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (id) {
       fetchBook();
     }
-  }, [id]);
+  }, [id, fetchBook]);
 
   const toggleFavorite = async () => {
     if (!login) {
@@ -142,7 +135,6 @@ export default function BookDetailsPage() {
         });
         toast.success("Added to favorites");
       }
-      // Update local state immediately for better UX
       setBook((prev) =>
         prev ? { ...prev, isFavorite: !prev.isFavorite } : null
       );
@@ -214,6 +206,48 @@ export default function BookDetailsPage() {
     router.push(`/pages/chat/${book?.userId}`);
   };
 
+  const getConditionColor = () => {
+    switch (book?.condition) {
+      case "New":
+        return "bg-green-100 text-green-800";
+      case "Good":
+        return "bg-blue-100 text-blue-800";
+      case "Fair":
+        return "bg-yellow-100 text-yellow-800";
+      case "Poor":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getCategoryColor = () => {
+    switch (book?.Category) {
+      case "Fiction":
+        return "bg-purple-100 text-purple-800";
+      case "Non-Fiction":
+        return "bg-cyan-100 text-cyan-800";
+      case "Science Fiction":
+        return "bg-indigo-100 text-indigo-800";
+      case "Fantasy":
+        return "bg-fuchsia-100 text-fuchsia-800";
+      case "Biography":
+        return "bg-amber-100 text-amber-800";
+      case "History":
+        return "bg-red-100 text-red-800";
+      case "Self-Help":
+        return "bg-emerald-100 text-emerald-800";
+      case "Romance":
+        return "bg-pink-100 text-pink-800";
+      case "Mystery":
+        return "bg-gray-100 text-gray-800";
+      case "Thriller":
+        return "bg-orange-100 text-orange-800";
+      default:
+        return "bg-gray-200 text-gray-600";
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[89vh]">
@@ -255,48 +289,6 @@ export default function BookDetailsPage() {
     );
   }
 
-  const getConditionColor = () => {
-    switch (book.condition) {
-      case "New":
-        return "bg-green-100 text-green-800";
-      case "Good":
-        return "bg-blue-100 text-blue-800";
-      case "Fair":
-        return "bg-yellow-100 text-yellow-800";
-      case "Poor":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getCategoryColor = () => {
-    switch (book.Category) {
-      case "Fiction":
-        return "bg-purple-100 text-purple-800";
-      case "Non-Fiction":
-        return "bg-cyan-100 text-cyan-800";
-      case "Science Fiction":
-        return "bg-indigo-100 text-indigo-800";
-      case "Fantasy":
-        return "bg-fuchsia-100 text-fuchsia-800";
-      case "Biography":
-        return "bg-amber-100 text-amber-800";
-      case "History":
-        return "bg-red-100 text-red-800";
-      case "Self-Help":
-        return "bg-emerald-100 text-emerald-800";
-      case "Romance":
-        return "bg-pink-100 text-pink-800";
-      case "Mystery":
-        return "bg-gray-100 text-gray-800";
-      case "Thriller":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-gray-200 text-gray-600";
-    }
-  };
-
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 md:mt-12">
       <Toaster
@@ -321,14 +313,15 @@ export default function BookDetailsPage() {
         </div>
 
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b flex justify-between items-center bg-gray-50">
-            <h1 className="text-xl p-3 md:p-0 md:text-2xl font-bold text-gray-800">
+          {/* Header Section */}
+          <div className="p-6 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50">
+            <h1 className="text-2xl font-bold text-gray-800 flex-1 min-w-[200px]">
               {book.title}
             </h1>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
               {login && role === "donor" && (
-                <div className="flex flex-col sm:flex-row gap-3">
+                <>
                   <Link href={`/pages/book/edit/${book._id}`}>
                     <Button
                       type="primary"
@@ -347,64 +340,71 @@ export default function BookDetailsPage() {
                   >
                     Delete
                   </Button>
-                </div>
+                </>
               )}
-              {login &&
-              role === "recipient" &&
-              varify === "verified" &&
-              book.status !== "Not Available" ? (
-                <Button
-                  type="primary"
-                  className="flex items-center gap-2"
-                  onClick={() => setRequestModalVisible(true)}
-                >
-                  <EditOutlined /> Request
-                </Button>
-              ) : login &&
-                role === "recipient" &&
-                book.status !== "Not Available" ? (
-                <Button
-                  type="primary"
-                  className="flex items-center gap-2"
-                  onClick={() => router.push(`/pages/profile`)}
-                >
-                  <EditOutlined /> Verify your account
-                </Button>
-              ) : (
-                role === "recipient" && (
-                  <span className="text-gray-500">
-                    Book is Already Requested
-                  </span>
-                )
+
+              {login && role === "recipient" && (
+                <>
+                  {varify === "verified" && book.status !== "Not Available" ? (
+                    <Button
+                      type="primary"
+                      icon={<EditOutlined />}
+                      onClick={() => setRequestModalVisible(true)}
+                      className="flex items-center"
+                    >
+                      Request
+                    </Button>
+                  ) : book.status !== "Not Available" ? (
+                    <Button
+                      type="primary"
+                      icon={<EditOutlined />}
+                      onClick={() => router.push(`/pages/profile`)}
+                      className="flex items-center"
+                    >
+                      Verify Account
+                    </Button>
+                  ) : (
+                    <span className="text-gray-500 text-sm sm:text-base">
+                      Book Already Requested
+                    </span>
+                  )}
+                </>
               )}
+
               {!login && (
-                <Link href="/pages/sign-in" className="text-blue-500">
-                  Login for request book
+                <Link
+                  href="/pages/sign-in"
+                  className="text-blue-500 hover:text-blue-700 text-sm sm:text-base"
+                >
+                  Login to request
                 </Link>
               )}
-            </div>
 
-            <Tooltip
-              title={
-                book?.isFavorite ? "Remove from favorites" : "Add to favorites"
-              }
-            >
-              <Button
-                type="text"
-                icon={
-                  book?.isFavorite ? (
-                    <HeartFilled className="text-red-500" />
-                  ) : (
-                    <HeartOutlined />
-                  )
-                }
-                onClick={toggleFavorite}
-                loading={favoriteLoading}
-                className="flex items-center hover:text-red-500"
-              />
-            </Tooltip>
+              {role === "recipient" && (
+                <Tooltip
+                  title={
+                    book.isFavorite ? "Remove from favorites" : "Add to favorites"
+                  }
+                >
+                  <Button
+                    type="text"
+                    icon={
+                      book.isFavorite ? (
+                        <HeartFilled className="text-red-500" />
+                      ) : (
+                        <HeartOutlined />
+                      )
+                    }
+                    onClick={toggleFavorite}
+                    loading={favoriteLoading}
+                    className="flex items-center hover:text-red-500"
+                  />
+                </Tooltip>
+              )}
+            </div>
           </div>
 
+          {/* Book Content */}
           <div className="p-6 md:flex gap-8">
             <div className="md:w-1/3 mb-6 md:mb-0">
               <div className="relative h-80 w-full rounded-lg overflow-hidden shadow-md">
@@ -420,14 +420,14 @@ export default function BookDetailsPage() {
             </div>
 
             <div className="md:w-2/3 space-y-6">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex gap-3 items-center">
                   <Link
                     href={`/pages/donor-profile/${book.userId}`}
                     className="hover:opacity-80 transition-opacity"
                   >
                     <Avatar
-                      src={book?.bookownerphoto}
+                      src={book.bookownerphoto}
                       shape="square"
                       size={60}
                       gap={2}
@@ -440,33 +440,30 @@ export default function BookDetailsPage() {
                       href={`/pages/donor-profile/${book.userId}`}
                       className="flex items-center hover:underline cursor-pointer"
                     >
-                      <h2 className="text-sm font-semibold text-gray-500">
+                      <span className="text-sm font-semibold text-gray-500">
                         Added By
                         <ArrowRightOutlined className="ml-2" />
-                      </h2>
+                      </span>
                     </Link>
                     <Link
                       href={`/pages/donor-profile/${book.userId}`}
-                      className="text-md md:text-xl text-gray-800 font-bold mt-1 hover:underline cursor-pointer"
+                      className="text-lg text-gray-800 font-bold mt-1 hover:underline cursor-pointer"
                     >
-                      {book?.bookownername || "Anonymous"}
+                      {book.bookownername || "Anonymous"}
                     </Link>
                   </div>
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-md md:text-lg font-semibold text-gray-500">
-                    Author
-                  </h2>
-                  <p className="text-lg md:text-xl text-gray-800 mt-1">
-                    {book.author}
-                  </p>
+                  <h2 className="text-sm font-semibold text-gray-500">Author</h2>
+                  <p className="text-lg text-gray-800 mt-1">{book.author}</p>
                 </div>
               </div>
+
               <Divider className="my-2" />
 
-              <div className="grid grid-rows-2 grid-cols-2 md:grid-rows-1 md:grid-cols-3 gap-4">
-                <div className="border-r">
-                  <h2 className="text-sm sm:text-md md:text-lg font-semibold text-gray-500">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="border-r pr-4">
+                  <h2 className="text-sm font-semibold text-gray-500">
                     Condition
                   </h2>
                   <span
@@ -475,8 +472,8 @@ export default function BookDetailsPage() {
                     {book.condition}
                   </span>
                 </div>
-                <div className="border-r">
-                  <h2 className="text-sm sm:text-md md:text-lg font-semibold text-gray-500">
+                <div className="border-r pr-4">
+                  <h2 className="text-sm font-semibold text-gray-500">
                     Category
                   </h2>
                   <span
@@ -485,11 +482,8 @@ export default function BookDetailsPage() {
                     {book.Category}
                   </span>
                 </div>
-
-                <div className="border-t m-auto w-full md:border-0">
-                  <h2 className="text-sm sm:text-md md:text-lg font-semibold text-gray-500">
-                    Status
-                  </h2>
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-500">Status</h2>
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-1 ${
                       book.status === "Available"
@@ -515,8 +509,8 @@ export default function BookDetailsPage() {
 
               <Divider className="my-2" />
 
-              <div className="text-sm text-gray-400 flex justify-between items-center">
-                <p>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <p className="text-sm text-gray-400">
                   Added {dayjs(book.createdAt).fromNow()} •{" "}
                   {dayjs(book.createdAt).format("MMMM D, YYYY")}
                 </p>
@@ -524,6 +518,7 @@ export default function BookDetailsPage() {
                   icon={<MessageOutlined />}
                   onClick={handleChatWithDonor}
                   disabled={!book.userId}
+                  className="w-full sm:w-auto"
                 >
                   Chat with Donor
                 </Button>

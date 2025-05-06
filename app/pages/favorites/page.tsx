@@ -1,29 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
-import nodata from "@/assests/hand-drawn-no-data-concept.png"
+import nodata from "@/assests/hand-drawn-no-data-concept.png";
 import {
   Button,
   Card,
   Image,
-  Tag,
   Tooltip,
   Pagination,
   message,
   Skeleton,
   Row,
   Col,
-  Typography
+  Typography,
 } from "antd";
 import {
   HeartFilled,
   ArrowLeftOutlined,
   EyeOutlined,
   ClockCircleOutlined,
-  HeartOutlined
+  HeartOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -62,35 +61,38 @@ export default function FavoritesPage() {
     total: 0,
   });
 
-  const fetchFavoriteBooks = async (page = 1) => {
-    if (!login) return;
-    
-    try {
-      setLoading(true);
-      const response = await axios.get("/api/allfav", {
-        params: {
-          page,
-          limit: pagination.limit,
-        },
-      });
+  const fetchFavoriteBooks = useCallback(
+    async (page = 1) => {
+      if (!login) return;
 
-      if (response.data.success) {
-        setBooks(response.data.data);
-        setPagination({
-          ...pagination,
-          page,
-          total: response.data.total,
+      try {
+        setLoading(true);
+        const response = await axios.get("/api/allfav", {
+          params: {
+            page,
+            limit: pagination.limit,
+          },
         });
-      } else {
-        message.error(response.data.message || "Failed to fetch favorites");
+
+        if (response.data.success) {
+          setBooks(response.data.data);
+          setPagination({
+            ...pagination,
+            page,
+            total: response.data.total,
+          });
+        } else {
+          message.error(response.data.message || "Failed to fetch favorites");
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+        message.error("Failed to load favorite books");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching favorites:", error);
-      message.error("Failed to load favorite books");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [login, pagination]
+  );
 
   const removeFavorite = async (bookId: string) => {
     try {
@@ -117,47 +119,12 @@ export default function FavoritesPage() {
   };
 
   useEffect(() => {
-    if (login) {
-      fetchFavoriteBooks();
-    } else {
-      setLoading(false);
-    }
-  }, [login]);
-
-  // if (!login) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center min-h-[70vh] py-12">
-  //       <Empty
-  //         image="/empty-favorites.svg"
-  //         imageStyle={{ height: 260 }}
-  //         description={
-  //           <Title level={4} className="text-gray-600 mt-4">
-  //             Please login to view your favorite books
-  //           </Title>
-  //         }
-  //       />
-  //       <Space className="mt-6">
-  //         <Button
-  //           type="primary"
-  //           size="large"
-  //           onClick={() => router.push("/pages/sign-in")}
-  //         >
-  //           Sign In
-  //         </Button>
-  //         <Button
-  //           size="large"
-  //           onClick={() => router.push("/pages/sign-up")}
-  //         >
-  //           Create Account
-  //         </Button>
-  //       </Space>
-  //     </div>
-  //   );
-  // }
+    fetchFavoriteBooks();
+  }, [fetchFavoriteBooks]);
 
   if (loading && books.length === 0) {
     return (
-      <div className=" w-full h-screen flex justify-center items-center ">
+      <div className="w-full h-screen flex justify-center items-center">
         <BookLoader />
       </div>
     );
@@ -166,16 +133,16 @@ export default function FavoritesPage() {
   if (books.length === 0 && !loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] py-12 md:mt-20">
-
-            <Image
-            src={nodata.src}
-            alt="No data available"
-            width={300}
-            height={300}
-            />
-            <Title level={4} className="text-gray-600 mt-4">
-              Your favorites list is empty
-            </Title>
+        <Image
+          src={nodata.src}
+          alt="No data available"
+          width={300}
+          height={300}
+          preview={false}
+        />
+        <Title level={4} className="text-gray-600 mt-4">
+          Your favorites list is empty
+        </Title>
         <Button
           type="primary"
           size="large"
@@ -188,26 +155,17 @@ export default function FavoritesPage() {
     );
   }
 
-
-
-  const getStatusColor = (status: string) => {
-    const statusMap: Record<string, string> = {
-      Available: "success",
-      "Not Available": "error",
-    };
-    return statusMap[status] || "default";
-  };
-
   return (
-    <div className="min-h-screen  md:mt-20">
+    <div className="min-h-screen md:mt-20">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <Title level={2} className="!mb-2 text-gray-800 ">
+            <Title level={2} className="!mb-2 text-gray-800">
               My Favorite Books
             </Title>
             <Text type="secondary">
-              {pagination.total} book{pagination.total !== 1 ? 's' : ''} in your collection
+              {pagination.total} book{pagination.total !== 1 ? "s" : ""} in your
+              collection
             </Text>
           </div>
           <Button
@@ -221,7 +179,7 @@ export default function FavoritesPage() {
 
         <Row gutter={[24, 24]}>
           {books.map((book) => (
-            <Col xs={24} sm={12} md={8} lg={5} key={book._id}>
+            <Col xs={24} sm={12} md={8} lg={6} key={book._id}>
               <Card
                 hoverable
                 cover={
@@ -229,17 +187,14 @@ export default function FavoritesPage() {
                     <Image
                       src={book.bookimg || "/book-placeholder.jpg"}
                       alt={book.title}
-                      fill
-                      className="object-cover cursor-pointer aspect-square "
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      className="cursor-pointer"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      // height={300}
-
                       preview={false}
                       placeholder={
                         <Skeleton.Image active className="w-full h-full" />
                       }
                     />
-
                   </div>
                 }
                 actions={[
@@ -271,27 +226,45 @@ export default function FavoritesPage() {
                 className="h-full flex flex-col"
                 bodyStyle={{ flexGrow: 1 }}
               >
-<div className="flex items-center justify-between gap-2">
-  <Title
-    level={5}
-    className="!mb-0 !text-sm text-gray-800 truncate w-2/3"
-    title={book.title}
-  >
-    {book.title}
-  </Title>
-  <Tooltip
-    title={`Added ${new Date(book.createdAt).toLocaleDateString()}`}
-  >
-    <div className="flex items-center text-xs text-gray-500 whitespace-nowrap">
-      <ClockCircleOutlined className="mr-1" />
-      {new Date(book.createdAt).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })}
-    </div>
-  </Tooltip>
-</div>
-
+                <div className="flex items-center justify-between gap-2">
+                  <Title
+                    level={5}
+                    className="!mb-0 !text-sm text-gray-800 truncate w-2/3"
+                    title={book.title}
+                  >
+                    {book.title}
+                  </Title>
+                  <Tooltip
+                    title={`Added ${new Date(
+                      book.createdAt
+                    ).toLocaleDateString()}`}
+                  >
+                    <div className="flex items-center text-xs text-gray-500 whitespace-nowrap">
+                      <ClockCircleOutlined className="mr-1" />
+                      {new Date(book.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </div>
+                  </Tooltip>
+                </div>
+                <Text type="secondary" className="block mt-1">
+                  {book.author}
+                </Text>
+                <div className="mt-2 flex justify-between items-center">
+                  <span
+                    className={`text-xs px-2 py-1 rounded ${
+                      book.status === "Available"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {book.status}
+                  </span>
+                  <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800">
+                    {book.Category}
+                  </span>
+                </div>
               </Card>
             </Col>
           ))}
@@ -306,7 +279,6 @@ export default function FavoritesPage() {
               onChange={fetchFavoriteBooks}
               showSizeChanger={false}
               responsive
-              className="mt-8"
             />
           </div>
         )}

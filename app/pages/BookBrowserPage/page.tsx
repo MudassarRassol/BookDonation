@@ -4,36 +4,20 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
-import { 
-  Spin, 
-  Input, 
-  Select, 
-  Button, 
-  Empty, 
-  Alert, 
-  Pagination,
-  Tabs,
-  Badge,
-  Card,
-  Image,
-  Tag,
-  Avatar,
-  Tooltip
+import {
+  Spin, Input, Select, Button, Empty, Alert, Pagination, Tabs, Badge, Card, Image,
+  Tag, Avatar, Tooltip, Layout, Row, Col, Space, Typography, Drawer
 } from "antd";
-import { 
-  LoadingOutlined, 
-  SearchOutlined,
-  ReloadOutlined,
-  EyeOutlined,
-  UserOutlined,
-  ClockCircleOutlined
+import {
+  LoadingOutlined, SearchOutlined, ReloadOutlined, EyeOutlined,
+  UserOutlined, ClockCircleOutlined, FilterOutlined
 } from "@ant-design/icons";
 import Link from "next/link";
 import debounce from "lodash.debounce";
 
+const { Content } = Layout;
 const { Search } = Input;
-const { Option } = Select;
-const { Meta } = Card;
+const { Text } = Typography;
 
 interface Book {
   _id: string;
@@ -48,7 +32,7 @@ interface Book {
     userdetailsId: {
       profilephoto: string;
       username: string;
-    }
+    };
   };
   createdAt: string;
   updatedAt: string;
@@ -61,44 +45,47 @@ const conditionOptions = [
   { value: 'POOR', label: 'Poor' },
 ];
 
+const categoryOptions = [
+  { value: 'Fiction', label: 'Fiction' },
+  { value: 'Non-Fiction', label: 'Non-Fiction' },
+  { value: 'Science Fiction', label: 'Science Fiction' },
+  { value: 'Fantasy', label: 'Fantasy' },
+  { value: 'Biography', label: 'Biography' },
+  { value: 'History', label: 'History' },
+  { value: 'Self-Help', label: 'Self-Help' },
+  { value: 'Romance', label: 'Romance' },
+  { value: 'Mystery', label: 'Mystery' },
+  { value: 'Thriller', label: 'Thriller' },
+];
+
 const BookBrowserPage = () => {
   const { userid, role } = useSelector((state: RootState) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [books, setBooks] = useState<Book[]>([]);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 8,
-    total: 0,
-    totalPages: 1
-  });
-  const [filters, setFilters] = useState({
-    search: "",
-    condition: "",
-    status: "",
-    category: ""
-  });
+  const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, totalPages: 1 });
+  const [filters, setFilters] = useState({ search: "", condition: "", status: "", category: "" });
   const [activeTab, setActiveTab] = useState("all");
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
-  const fetchBooks = async (page = 1) => {
+  const fetchBooks = useCallback(async (page = 1) => {
     try {
       setLoading(true);
-      const params = {
-        page,
-        limit: pagination.limit,
-        search: filters.search,
-        condition: filters.condition,
-        status: filters.status,
-        category: filters.category
-      };
+      const response = await axios.get(
+        role === 'recipient' || role === 'donor' ? '/api/book/getallbooks' : '/api/book/guestallbook',
+        {
+          params: {
+            page,
+            limit: pagination.limit,
+            search: filters.search,
+            condition: filters.condition,
+            status: filters.status,
+            category: filters.category
+          },
+          headers: { userid, role }
+        }
+      );
 
-      const headers = {
-        userid,
-        role
-      };
-
-      const response = await axios.get(`${role === 'recipient' || role === 'donor' ? '/api/book/getallbooks' : '/api/book/guestallbook'}`, { params, headers });
-      console.log(response)
       if (response.data.success) {
         setBooks(response.data.data);
         setPagination({
@@ -111,16 +98,17 @@ const BookBrowserPage = () => {
         setError(response.data.message || "Failed to load books");
       }
     } catch (err) {
+      console.error(err);
       setError("Failed to fetch books");
-      console.error("Error fetching books:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, pagination.limit, role, userid]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchBooks = useCallback(
     debounce((page = 1) => fetchBooks(page), 500),
-    [filters, role, userid]
+    [fetchBooks]
   );
 
   useEffect(() => {
@@ -128,39 +116,28 @@ const BookBrowserPage = () => {
     return () => debouncedFetchBooks.cancel();
   }, [filters, activeTab, debouncedFetchBooks]);
 
-  const handleSearch = (value: string) => {
-    setFilters({...filters, search: value});
-  };
+  const handleSearch = (value: string) => setFilters({ ...filters, search: value });
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => {
-      const newFilters = {...prev, [key]: value};
       if (key === 'status') {
-        let newTab = 'all';
-        if (value === 'Available') newTab = 'available';
-        if (value === 'Not Available') newTab = 'unavailable';
+        const newTab = value === 'Available' ? 'available' : value === 'Not Available' ? 'unavailable' : 'all';
         setActiveTab(newTab);
       }
-      return newFilters;
+      return { ...prev, [key]: value };
     });
   };
 
   const resetFilters = () => {
-    setFilters({
-      search: "",
-      condition: "",
-      status: "",
-      category: ""
-    });
+    setFilters({ search: "", condition: "", status: "", category: "" });
     setActiveTab("all");
+    setDrawerVisible(false);
   };
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
-    let statusFilter = "";
-    if (key === "available") statusFilter = "Available";
-    if (key === "unavailable") statusFilter = "Not Available";
-    setFilters(prev => ({...prev, status: statusFilter}));
+    const statusFilter = key === "available" ? "Available" : key === "unavailable" ? "Not Available" : "";
+    setFilters(prev => ({ ...prev, status: statusFilter }));
   };
 
   const getStatusCounts = () => {
@@ -169,276 +146,196 @@ const BookBrowserPage = () => {
     return { available, unavailable, total: books.length };
   };
 
+  const getConditionColor = (condition: string) => ({
+    NEW: "green", GOOD: "blue", FAIR: "orange", POOR: "red"
+  }[condition] || "gray");
+
+  const getStatusColor = (status: string) => ({
+    Available: "success", "Not Available": "error"
+  }[status] || "default");
+
+  const getCategoryColor = (category: string) => ({
+    Fiction: "magenta", "Non-Fiction": "cyan", "Science Fiction": "purple",
+    Fantasy: "gold", Biography: "orange", History: "red", "Self-Help": "green",
+    Romance: "pink", Mystery: "geekblue", Thriller: "volcano"
+  }[category] || "default");
+
   const statusCounts = getStatusCounts();
 
-  const getConditionColor = (condition: string) => {
-    const conditionMap: Record<string, string> = {
-      NEW: "green",
-      GOOD: "blue",
-      FAIR: "orange",
-      POOR: "red"
-    };
-    return conditionMap[condition] || "gray";
-  };
-
-  const getStatusColor = (status: string) => {
-    const statusMap: Record<string, string> = {
-      Available: "success",
-      "Not Available": "error"
-    };
-    return statusMap[status] || "default";
-  };
-
-  const getCategoryColor = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      Fiction: "magenta",
-      "Non-Fiction": "cyan",
-      "Science Fiction": "purple",
-      Fantasy: "gold",
-      Biography: "orange",
-      History: "red",
-      "Self-Help": "green",
-      Romance: "pink",
-      Mystery: "geekblue",
-      Thriller: "volcano"
-    };
-    return categoryMap[category] || "default";
-  };
-
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8 md:mt-20">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">
-            {role === "donor" ? "My Books Library" : "Book Exchange Marketplace"}
-          </h1>
-          <p className="mt-2 text-lg text-gray-600">
-            {role === "donor" 
-              ? "Manage your donated books" 
-              : "Find your next great read"}
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <Search
-              placeholder="Search by title, author, or description"
-              allowClear
-              enterButton={<SearchOutlined />}
-              size="large"
-              value={filters.search}
-              onChange={(e) => setFilters({...filters, search: e.target.value})}
-              onSearch={handleSearch}
-              className="flex-1"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-4">
-            <Select
-              placeholder="Condition"
-              style={{ width: 120 }}
-              allowClear
-              value={filters.condition || null}
-              onChange={(value) => handleFilterChange("condition", value)}
-              options={conditionOptions}
-            />
-
-            <Select
-              placeholder="Category"
-              style={{ width: 160 }}
-              allowClear
-              value={filters.category || null}
-              onChange={(value) => handleFilterChange("category", value)}
-            >
-              <Option value="Fiction">Fiction</Option>
-              <Option value="Non-Fiction">Non-Fiction</Option>
-              <Option value="Science Fiction">Science Fiction</Option>
-              <Option value="Fantasy">Fantasy</Option>
-              <Option value="Biography">Biography</Option>
-              <Option value="History">History</Option>
-              <Option value="Self-Help">Self-Help</Option>
-              <Option value="Romance">Romance</Option>
-              <Option value="Mystery">Mystery</Option>
-              <Option value="Thriller">Thriller</Option>
-            </Select>
-
-            <Button 
-              icon={<ReloadOutlined />} 
-              onClick={resetFilters}
-              className="ml-auto"
-            >
-              Reset Filters
-            </Button>
-          </div>
-
-          <div className="mt-4">
+    <Layout className="min-h-screen md:mt-20">
+      <Content className="bg-white p-4 sm:p-8 w-full">
+        <div className="mx-auto">
+          <Card className="mb-6 shadow-sm">
+          <Row gutter={[16, 16]} align="middle" className="mb-4">
+  <Col xs={24} sm={6} md={4} lg={3}>
+    <Text strong className="text-lg whitespace-nowrap">
+      {
+        role === "recipient"  ? "All Books" :"My Books" 
+      }
+    </Text>
+  </Col>
+  <Col xs={24} sm={18} md={20} lg={21}>
+    <Search
+      className="w-full"
+      placeholder="Search by title, author, or description"
+      allowClear
+      enterButton={<SearchOutlined />}
+      size="large"
+      value={filters.search}
+      onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+      onSearch={handleSearch}
+    />
+  </Col>
+</Row>
+            <Button
+                  icon={<FilterOutlined />}
+                  block
+                  onClick={() => setDrawerVisible(true)}
+                  className=" w-auto max-w-[120px] ml-auto mt-3  float-right"
+                >
+                  Filters
+                </Button>
             <Tabs
               activeKey={activeTab}
               onChange={handleTabChange}
+              className="mt-4"
               items={[
                 {
                   key: "all",
-                  label: (
-                    <span className="flex items-center">
-                      All Books <Badge count={statusCounts.total} className="ml-2" />
-                    </span>
-                  ),
+                  label: <span>All Books <Badge count={statusCounts.total} /></span>,
                 },
                 {
                   key: "available",
-                  label: (
-                    <span className="flex items-center">
-                      Available <Badge count={statusCounts.available} className="ml-2" />
-                    </span>
-                  ),
+                  label: <span>Available <Badge count={statusCounts.available} /></span>,
                 },
                 {
                   key: "unavailable",
-                  label: (
-                    <span className="flex items-center">
-                      Unavailable <Badge count={statusCounts.unavailable} className="ml-2" />
-                    </span>
-                  ),
+                  label: <span>Unavailable <Badge count={statusCounts.unavailable} /></span>,
                 },
               ]}
             />
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          {loading && (
-            <div className="flex justify-center items-center h-64">
-              <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
-            </div>
-          )}
-
-          {error && !loading && (
-            <div className="p-4">
-              <Alert
-                message="Error"
-                description={error}
-                type="error"
-                showIcon
-                closable
-                onClose={() => setError("")}
-              />
-            </div>
-          )}
-
-          {!loading && !error && books.length === 0 && (
-            <div className="p-8 text-center">
-              <Empty
-                description={
-                  <span className="text-gray-600 text-lg">
-                    No books found matching your criteria
-                  </span>
-                }
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-              <Button 
-                type="primary" 
-                onClick={resetFilters}
-                className="mt-4"
-              >
-                Clear Filters
-              </Button>
-            </div>
-          )}
-
-          {!loading && !error && books.length > 0 && (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {books.map((book) => (
-                 <Card
-                 className="shadow-md hover:shadow-lg transition-shadow duration-300"
-                 key={book._id}
-                 hoverable
-                 cover={
-                   <div className="relative h-48">
-                     <Image
-                       src={book.bookimg || "/book-placeholder.jpg"}
-                       alt={book.title}
-                       height={200}
-                       width={"100%"}
-                       className="object-cover w-full "
-                     />
-                   </div>
-                 }
-                 actions={[
-                   <Link href={`/pages/book/${book._id}`} key="view">
-                     <Tooltip title="View Details">
-                       <EyeOutlined className="text-blue-500" />
-                     </Tooltip>
-                   </Link>
-                 ]}
-               >
-                 <Meta
-                   title={
-                     <span className="font-semibold flex justify-between items-center text-black">
-                       {book.title}
-                       <div className="text-xsm text-gray-500">
-                       by {book.author}
-                       </div>
-                     </span>
-                   }
-                   description={
-                     <div className="space-y-2">
-                       <div className="flex flex-wrap gap-1">
-                         <Tag color={getStatusColor(book.status)}>{book.status}</Tag>
-                         <Tooltip title={`Condition: ${book.condition}`}>
-                           <Tag color={getConditionColor(book.condition)}>{book.condition}</Tag>
-                         </Tooltip>
-                         <Tag color={getCategoryColor(book.Category)}>{book.Category}</Tag>
-                       </div>
-                       <div className="flex items-center justify-between">
-                         <div className="flex items-center">
-                           {book.userId?.userdetailsId?.profilephoto ? (
-                             <Avatar
-                               src={book.userId.userdetailsId.profilephoto}
-                               size="small"
-                               className="mr-2"
-                             />
-                           ) : (
-                             <Avatar icon={<UserOutlined />} size="small" className="mr-2" />
-                           )}
-                           <span className="text-sm text-gray-800">
-                             {book.userId?.userdetailsId?.username || "Anonymous"}
-                           </span>
-                         </div>
-                         <Tooltip title={`Added ${new Date(book.createdAt).toLocaleDateString()}`}>
-                           <div className="flex items-center text-xs text-gray-500">
-                             <ClockCircleOutlined className="mr-1" />
-                             {new Date(book.createdAt).toLocaleDateString('en-US', {
-                               month: 'short',
-                               day: 'numeric',
-                             })}
-                           </div>
-                         </Tooltip>
-                       </div>
-                     </div>
-                   }
-                 />
-               </Card>
-               
-                ))}
+          </Card>
+          <br />
+          <Card className="shadow-sm">
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
               </div>
-
-              <div className="flex justify-center mt-8">
-                <Pagination
-                  current={pagination.page}
-                  total={pagination.total}
-                  pageSize={pagination.limit}
-                  onChange={fetchBooks}
-                  showSizeChanger={false}
-                  hideOnSinglePage={true}
-                  className="pagination"
+            ) : error ? (
+              <Alert message="Error" description={error} type="error" showIcon closable />
+            ) : books.length === 0 ? (
+              <div className="p-8 text-center">
+                <Empty
+                  description={<Text type="secondary" className="text-lg">No books found</Text>}
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
+                <Button type="primary" onClick={resetFilters} className="mt-4">Clear Filters</Button>
               </div>
-            </>
-          )}
+            ) : (
+              <>
+                <Row gutter={[16, 16]}  >
+                  {books.map((book) => (
+                    <Col key={book._id} xs={24} sm={12} md={8} lg={6}>
+                      <Card
+                        hoverable
+                        cover={
+                          <div className="relative h-48 overflow-hidden">
+                            <Image
+                              src={book.bookimg || "/book-placeholder.jpg"}
+                              alt={book.title}
+                              height="100%"
+                              width="100%"
+                              style={{ objectFit: 'cover' }}
+                              preview={false}
+                            />
+                          </div>
+                        }
+                        actions={[
+                          <Link href={`/pages/book/${book._id}`} key="view">
+                            <Tooltip title="View Details">
+                              <Button type="text" icon={<EyeOutlined />} />
+                            </Tooltip>
+                          </Link>
+                        ]}
+                      >
+                        <Card.Meta
+                          title={<Text strong ellipsis={{ tooltip: book.title }}>{book.title}</Text>}
+                          description={
+                            <>
+                              <Text type="secondary">by {book.author}</Text>
+                              <div className="mt-2">
+                                <Space size={[4, 4]} wrap>
+                                  <Tag color={getStatusColor(book.status)}>{book.status}</Tag>
+                                  <Tag color={getConditionColor(book.condition)}>{book.condition}</Tag>
+                                  <Tag color={getCategoryColor(book.Category)}>{book.Category}</Tag>
+                                </Space>
+                              </div>
+                              <div className="flex justify-between items-center mt-2">
+                                <Space>
+                                  <Avatar src={book.userId?.userdetailsId?.profilephoto} icon={<UserOutlined />} size="small" />
+                                  <Text type="secondary">{book.userId?.userdetailsId?.username || "Anonymous"}</Text>
+                                </Space>
+                                <Tooltip title={`Added ${new Date(book.createdAt).toLocaleDateString()}`}>
+                                  <Text type="secondary">
+                                    <ClockCircleOutlined className="mr-1" />
+                                    {new Date(book.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  </Text>
+                                </Tooltip>
+                              </div>
+                            </>
+                          }
+                        />
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+
+                <div className="flex justify-center mt-8">
+                  <Pagination
+                    current={pagination.page}
+                    total={pagination.total}
+                    pageSize={pagination.limit}
+                    onChange={fetchBooks}
+                    showSizeChanger={false}
+                    hideOnSinglePage={true}
+                  />
+                </div>
+              </>
+            )}
+          </Card>
+
+          {/* Responsive Filter Drawer */}
+          <Drawer
+            title="Filters"
+            placement="right"
+            onClose={() => setDrawerVisible(false)}
+            open={drawerVisible}
+            width={280}
+          >
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Select
+                placeholder="Condition"
+                value={filters.condition || undefined}
+                onChange={(value) => handleFilterChange("condition", value)}
+                options={conditionOptions}
+                allowClear
+              />
+              <Select
+                placeholder="Category"
+                value={filters.category || undefined}
+                onChange={(value) => handleFilterChange("category", value)}
+                options={categoryOptions}
+                allowClear
+              />
+              <Button icon={<ReloadOutlined />} onClick={resetFilters} block>
+                Reset Filters
+              </Button>
+            </Space>
+          </Drawer>
         </div>
-      </div>
-    </div>
+      </Content>
+    </Layout>
   );
 };
 

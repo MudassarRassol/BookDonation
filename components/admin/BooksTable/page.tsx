@@ -1,10 +1,9 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 import { Table, Tag, Button, Modal, Image, message, Popconfirm, Descriptions, Divider, Card, Avatar, Space, Input, Grid } from 'antd'
-import { DeleteOutlined, EyeOutlined, UserOutlined, BookOutlined, CalendarOutlined, EnvironmentOutlined, SearchOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EyeOutlined, UserOutlined, BookOutlined, EnvironmentOutlined, SearchOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import Link from 'next/link'
 
 const { useBreakpoint } = Grid
 
@@ -94,18 +93,18 @@ const Books = () => {
         title: 'Book',
         render: (record: Book) => (
           <Space direction="vertical" size={4}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className='flex items-center gap-[8px]'>
               <Image 
                 src={record.bookimg} 
                 alt="Book Cover" 
                 width={40}
-                height={56}
-                style={{ objectFit: 'cover', borderRadius: 4 }}
+                className='  object-cover  rounded-md '
                 preview={false}
               />
               <div>
-                <div style={{ fontWeight: 'bold' }}>{record.title}</div>
-                <div style={{ fontSize: 12, color: '#666' }}>{record.author}</div>
+              <div className="font-bold">{record.title}</div>
+<div className="text-xs text-gray-600">{record.author}</div>
+
               </div>
             </div>
             <Space size={8}>
@@ -182,7 +181,7 @@ const Books = () => {
       },
       { 
         title: 'Status', 
-        render: (_: any, record: Book) => (
+        render: (_: unknown, record: Book) => (
           <Tag 
             color={record.status === 'Available' ? 'green' : 'volcano'}
             icon={record.status === 'Available' ? <BookOutlined /> : null}
@@ -194,7 +193,7 @@ const Books = () => {
       },
       { 
         title: 'Owner', 
-        render: (_: any, record: Book) => (
+        render: (_: unknown, record: Book) => (
             // <Link href={`/pages/donor-profile/${record.userId}`} className=' cursor-pointer ' >
 
             // </Link>
@@ -210,7 +209,7 @@ const Books = () => {
       },
       { 
         title: 'City', 
-        render: (_: any, record: Book) => (
+        render: (_: unknown, record: Book) => (
           <Space>
             <EnvironmentOutlined style={{ color: '#1890ff' }} />
             <span>{record.userId?.userdetailsId?.city}</span>
@@ -219,14 +218,14 @@ const Books = () => {
       },
       { 
         title: 'Added', 
-        render: (_: any, record: Book) => (
+        render: (_: unknown, record: Book) => (
           <span>{dayjs(record.createdAt).format('MMM D')}</span>
         ),
         width: 100
       },
       { 
         title: 'Actions', 
-        render: (_: any, record: Book) => (
+        render: (_: unknown, record: Book) => (
           <Space size="small">
             <Button 
               type="primary" 
@@ -287,7 +286,7 @@ const Books = () => {
           rowKey="_id"
           loading={loading}
           pagination={false}
-          scroll={{ x: screens.md ? true : false }}
+          scroll={{ x: screens.md || undefined }}
           size="middle"
           className="responsive-table"
         />
@@ -307,12 +306,8 @@ const Books = () => {
   
       >
         {selectedBook && (
-          <div style={{ display: 'flex', flexDirection: screens.md ? 'row' : 'column' }}>
-            <div style={{ 
-              flex: 1, 
-              borderBottom: screens.md ? 'none' : '1px solid #f0f0f0',
-              borderRight: screens.md ? '1px solid #f0f0f0' : 'none'
-            }}>
+          <div className="flex flex-col md:flex-row">
+            <div  className="flex-1 border-b border-gray-200 md:border-b-0 md:border-r">
               <Image
                 src={selectedBook.bookimg}
                 alt={selectedBook.title}
@@ -325,16 +320,10 @@ const Books = () => {
                 }}
               />
             </div>
-            <div style={{ 
-              flex: 2, 
-              padding: 24,
-              overflow: 'auto',
-              maxHeight: screens.md ? '70vh' : 'none'
-            }}>
-              <h1 style={{ marginBottom: 8, fontSize: screens.md ? 24 : 20 }}>{selectedBook.title}</h1>
-              <h3 style={{ color: '#666', marginBottom: 24, fontSize: screens.md ? 18 : 16 }}>
-                {selectedBook.author}
-              </h3>
+            <div className='flex-[2] p-6 overflow-auto md:max-h-[70vh]'>
+            <h1 className="mb-2 text-[20px] md:text-[24px]">{selectedBook.title}</h1>
+<h3 className="text-gray-600 mb-6 text-[16px] md:text-[18px]">{selectedBook.author}</h3>
+
               
               <Descriptions bordered column={1} size="small">
                 <Descriptions.Item label="Status">
@@ -353,7 +342,7 @@ const Books = () => {
               </Descriptions>
 
               <Divider orientation="left" plain>Description</Divider>
-              <p style={{ whiteSpace: 'pre-line' }}>{selectedBook.description}</p>
+              <p className="whitespace-pre-line">{selectedBook.description}</p>
 
               <Divider orientation="left" plain>Owner Information</Divider>
               
@@ -365,7 +354,8 @@ const Books = () => {
                     icon={<UserOutlined />}
                   />
                   <div>
-                    <h3 style={{ marginBottom: 4 }}>{selectedBook.userId?.userdetailsId?.username}</h3>
+                  <h3 className="mb-1">{selectedBook.userId?.userdetailsId?.username}</h3>
+
                     <Space size="middle">
                       <Tag color="blue">{selectedBook.userId?.userdetailsId?.role}</Tag>
                       <Space>

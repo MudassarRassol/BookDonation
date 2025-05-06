@@ -167,11 +167,11 @@ const UpdateProfilePage = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br mt-10 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gradient-to-br py-8 px-4 sm:px-6 lg:px-8 mt-20 ">
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors"
+          className="flex items-center mb-6 transition-colors"
         >
           <ArrowLeftOutlined className="mr-2" />
           Back to Profile
@@ -204,6 +204,7 @@ const UpdateProfilePage = () => {
                   </div>
                 </label>
                 <input
+                 title="profilephoto"
                   onChange={handleFileChange}
                   type="file"
                   id="profilephoto"

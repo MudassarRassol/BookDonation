@@ -170,7 +170,7 @@ const AccountPage = () => {
         {/* Profile Card */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
           {/* Profile Header with Gradient */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-400 p-6 text-white">
+          <div className="bg-gradient-to-r p-6 bg-black text-white">
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <Avatar
                 size={120}
@@ -268,7 +268,8 @@ const AccountPage = () => {
           <div className="border-t border-gray-200 p-6 bg-gray-50 flex flex-wrap justify-center gap-4">
             <Link href="/pages/userdetails/update-user-data">
               <Button
-                type="primary"
+                type="dashed"
+                color="pink"
                 icon={<EditOutlined />}
                 size="large"
                 className="min-w-[200px]"

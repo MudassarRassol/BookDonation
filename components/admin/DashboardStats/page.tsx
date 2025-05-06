@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import { Line, Pie, Column } from '@ant-design/charts';
 import axios from 'axios';
+import { Breakpoint } from 'antd';
 
 
 interface DashboardStats {
@@ -58,8 +59,8 @@ export default function DashboardPage() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [recentDonations, setRecentDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState('')
+  console.log('userStats', userStats)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -112,11 +113,6 @@ export default function DashboardPage() {
     donations: item.donations
   }));
 
-  const pieChartData = userStats ? [
-    { type: 'Admins', value: userStats.admins },
-    { type: 'Librarians', value: userStats.librarians },
-    { type: 'Members', value: userStats.members }
-  ] : [];
 
   const donationStatusData = stats ? [
     { type: 'Pending', value: stats.pendingDonations },
@@ -138,7 +134,7 @@ export default function DashboardPage() {
       key: 'bookImage',
       dataIndex: 'bookImage',
       width: 100,
-      responsive: ['md'],
+      responsive: ['md'] as Breakpoint[],
       render: (_: unknown, record: Donation) => (
         <Avatar 
           src={record.bookImage} 
@@ -157,19 +153,19 @@ export default function DashboardPage() {
       title: 'Book', 
       dataIndex: 'bookName', 
       key: 'bookName',
-      responsive: ['xs', 'sm', 'md', 'lg']
+      responsive: ['xs', 'sm', 'md', 'lg'] as Breakpoint[]
     },
     { 
       title: 'Donor', 
       dataIndex: 'donorEmail', 
       key: 'donor',
-      responsive: ['sm', 'md', 'lg']
+      responsive: ['sm', 'md', 'lg'] as Breakpoint[]
     },
     { 
       title: 'Status', 
       dataIndex: 'status', 
       key: 'status',
-      responsive: ['xs', 'sm', 'md', 'lg'],
+      responsive: ['xs', 'sm', 'md', 'lg'] as Breakpoint[],
       render: (status: string) => (
         <Tag color={STATUS_COLORS[status.toLowerCase()]}>
           {status.toUpperCase()}
@@ -180,7 +176,7 @@ export default function DashboardPage() {
       title: 'Date', 
       dataIndex: 'date', 
       key: 'date',
-      responsive: ['md', 'lg']
+      responsive: ['md', 'lg'] as Breakpoint[]
     }
   ];
 
@@ -381,7 +377,7 @@ export default function DashboardPage() {
                 fontSize: '24px',
                 fontWeight: 'bold',
               },
-              formatter: (datum) => {
+              formatter: () => {
                 const total = donationStatusData.reduce((sum, item) => sum + item.value, 0);
                 return `${total}`;
               },

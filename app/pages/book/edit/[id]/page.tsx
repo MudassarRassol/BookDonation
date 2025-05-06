@@ -224,6 +224,7 @@ const EditBookPage = () => {
                   </div>
                 </label>
                 <input
+                 title="file"
                   onChange={handleFileChange}
                   type="file"
                   id="bookimg"
@@ -280,6 +281,7 @@ const EditBookPage = () => {
                       name="condition"
                       value={data.condition}
                       onChange={handleChange}
+                      title="condtion"
                       required
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
@@ -293,14 +295,12 @@ const EditBookPage = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Category
-                    </label>
                     <select
                       name="Category"
                       value={data.Category}
                       onChange={handleChange}
                       required
+                      title="category"
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
                       <option value="" disabled>

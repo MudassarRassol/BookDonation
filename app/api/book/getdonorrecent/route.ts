@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     // Find books for this user, sorted by createdAt in descending order
     const books = await Book.find({ userId: userId })
       .sort({ createdAt: -1 }) // -1 for descending (newest first)
-      .limit(5)
+      .limit(8)
       .lean(); // Convert to plain JavaScript objects
 
       if(books.length > 0) {

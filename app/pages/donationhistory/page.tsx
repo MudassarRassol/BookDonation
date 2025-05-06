@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
-import { Spin, Tabs, Badge, Empty, Alert, Avatar } from "antd";
+import { Spin, Tabs, Badge, Empty, Alert, Avatar, message } from "antd";
 import { LoadingOutlined, EyeOutlined, UserOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import Image from "next/image";
@@ -43,58 +43,46 @@ interface Donation {
 }
 
 const DonationHistoryPage = () => {
-  const { userid,role } = useSelector((state: RootState) => state.user);
+  const { userid, role } = useSelector((state: RootState) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [donations, setDonations] = useState<Donation[]>([]);
   const [activeTab, setActiveTab] = useState("all");
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [pollingEnabled, setPollingEnabled] = useState(false);
 
   const fetchDonationHistory = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get("/api/donation/donationhistory");
-      if (response.data.success) {
-        // Use only the donationHistory array from the response
-        const allDonations = [...(response.data.data.donationHistory || [])];
-        setDonations(allDonations);
-      } else {
-        setError(response.data.error || "Failed to load history");
+      
+      if (response.status !== 200) {
+        throw new Error(response.data.error || "Failed to load history");
       }
+
+      setDonations(response.data.data?.donationHistory || []);
+      setError("");
     } catch (err) {
-      setError("Failed to fetch donation history");
-      console.error("Error fetching donation history:", err);
+      const errorMessage = err instanceof Error ? err.message : "Failed to fetch donation history";
+      setError(errorMessage);
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Initial fetch and polling setup
   useEffect(() => {
-    if (userid) {
-      // Initial fetch
-      fetchDonationHistory();
-      
-      // Set up polling every 30 seconds
+    if (!userid) return;
+
+    // Initial fetch
+    fetchDonationHistory();
+
+    // Only setup polling if enabled
+    if (pollingEnabled) {
       const interval = setInterval(fetchDonationHistory, 30000);
-      setPollingInterval(interval);
-
-      // Clean up interval on unmount
-      return () => {
-        if (pollingInterval) {
-          clearInterval(pollingInterval);
-        }
-      };
+      return () => clearInterval(interval);
     }
-  }, [userid, fetchDonationHistory]);
-
-  // Clean up interval when component unmounts
-  useEffect(() => {
-    return () => {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-      }
-    };
-  }, [pollingInterval]);
+  }, [userid, fetchDonationHistory, pollingEnabled]);
 
   const filteredDonations = donations.filter(donation => 
     activeTab === "all" ? true : donation.status === activeTab
@@ -102,14 +90,10 @@ const DonationHistoryPage = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "approved":
-        return "bg-green-100 text-green-800";
-      case "rejected":
-        return "bg-red-100 text-red-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "bg-gray-100 text-gray-800";
+      case "approved": return "bg-green-100 text-green-800";
+      case "rejected": return "bg-red-100 text-red-800";
+      case "pending": return "bg-yellow-100 text-yellow-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -120,7 +104,7 @@ const DonationHistoryPage = () => {
       fair: "bg-yellow-100 text-yellow-800",
       poor: "bg-red-100 text-red-800"
     };
-    return conditionMap[condition] || "bg-gray-100 text-gray-800";
+    return conditionMap[condition.toLowerCase()] || "bg-gray-100 text-gray-800";
   };
 
   const getCategoryColor = (category: string) => {
@@ -136,28 +120,31 @@ const DonationHistoryPage = () => {
       mystery: "bg-indigo-100 text-indigo-800",
       thriller: "bg-gray-100 text-gray-800"
     };
-    return categoryMap[category] || "bg-gray-100 text-gray-800";
+    return categoryMap[category.toLowerCase()] || "bg-gray-100 text-gray-800";
   };
 
-  if (loading) {
+  const togglePolling = () => {
+    setPollingEnabled(!pollingEnabled);
+    message.info(`Live updates ${!pollingEnabled ? "enabled" : "disabled"}`);
+  };
+
+  if (!userid) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+        <Alert
+          message="Authentication Required"
+          description="Please login to view your donation history"
+          type="warning"
+          showIcon
+        />
       </div>
     );
   }
 
-  if (error) {
+  if (loading && donations.length === 0) {
     return (
-      <div className="p-4">
-        <Alert
-          message="Error"
-          description={error}
-          type="error"
-          showIcon
-          closable
-          onClose={() => setError("")}
-        />
+      <div className="flex justify-center items-center h-screen">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
       </div>
     );
   }
@@ -172,7 +159,27 @@ const DonationHistoryPage = () => {
           <p className="mt-3 text-xl text-gray-500">
             Track all your book donations in one place
           </p>
+          
+          <button
+            onClick={togglePolling}
+            className={`mt-4 px-4 py-2 rounded-md ${pollingEnabled ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500 hover:bg-gray-600'} text-white transition-colors`}
+          >
+            {pollingEnabled ? 'Disable' : 'Enable'} Live Updates
+          </button>
         </div>
+
+        {error && (
+          <div className="mb-6">
+            <Alert
+              message="Error"
+              description={error}
+              type="error"
+              showIcon
+              closable
+              onClose={() => setError("")}
+            />
+          </div>
+        )}
 
         <div className="bg-white shadow rounded-lg p-6 mb-8">
           <Tabs
@@ -183,7 +190,7 @@ const DonationHistoryPage = () => {
               {
                 key: "all",
                 label: (
-                  <span className="flex items-center">
+                  <span className="flex items-center gap-2">
                     All Donations
                     <Badge
                       count={donations.length}
@@ -196,7 +203,7 @@ const DonationHistoryPage = () => {
               {
                 key: "approved",
                 label: (
-                  <span className="flex items-center">
+                  <span className="flex items-center gap-2">
                     Approved
                     <Badge
                       count={donations.filter(d => d.status === "approved").length}
@@ -209,7 +216,7 @@ const DonationHistoryPage = () => {
               {
                 key: "pending",
                 label: (
-                  <span className="flex items-center">
+                  <span className="flex items-center gap-2">
                     Pending
                     <Badge
                       count={donations.filter(d => d.status === "pending").length}
@@ -248,9 +255,9 @@ const DonationHistoryPage = () => {
             </div>
           ) : (
             <div className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredDonations.map((donation, index) => (
+              {filteredDonations.map((donation) => (
                 <div
-                  key={index}
+                  key={donation._id}
                   className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
                 >
                   <div className="relative h-48 w-full">
@@ -260,6 +267,7 @@ const DonationHistoryPage = () => {
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={false}
                     />
                     <div className="absolute top-2 right-2">
                       <span
@@ -302,16 +310,17 @@ const DonationHistoryPage = () => {
                       </span>
                     </div>
 
-                    <p className="text-sm text-gray-500 line-clamp-1 mb-4">
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-4 h-12">
                       {donation.bookid.description}
                     </p>
 
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
-                        { (donation.donorId?.userdetailsId?.profilephoto || donation.userId?.userdetailsId?.profilephoto ) ? (
+                        {(donation.donorId?.userdetailsId?.profilephoto || donation.userId?.userdetailsId?.profilephoto) ? (
                           <Avatar
-                            src={role === 'donor' ? donation.userId?.userdetailsId?.profilephoto : donation.donorId?.userdetailsId?.profilephoto }
-                            
+                            src={role === 'donor' 
+                              ? donation.userId?.userdetailsId?.profilephoto 
+                              : donation.donorId?.userdetailsId?.profilephoto}
                             size={30}
                             className="mr-2"
                           />
@@ -323,16 +332,18 @@ const DonationHistoryPage = () => {
                           />
                         )}
                         <span className="text-sm text-gray-600">
-                          
-                          {
-                            role === 'donor' ?  'Requested   ' + donation.userId?.userdetailsId?.username : role === 'recipent' ? donation.donorId?.userdetailsId?.username : "Anonymous"
-                          }
+                          {role === 'donor' 
+                            ? `Requested by ${donation.userId?.userdetailsId?.username || "Anonymous"}` 
+                            : role === 'recipient' 
+                              ? donation.donorId?.userdetailsId?.username || "Anonymous"
+                              : "Anonymous"}
                         </span>
                       </div>
 
                       <Link
                         href={`/pages/book/${donation.bookid._id}`}
                         className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+                        prefetch={false}
                       >
                         <EyeOutlined className="mr-1" />
                         View

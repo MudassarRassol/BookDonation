@@ -188,7 +188,11 @@ const AddBookPage = () => {
             // minLength={3}
           />
 
+          <label htmlFor="category-select" className="hidden text-sm font-medium text-gray-700">
+            Book Category
+          </label>
           <select
+            id="category-select"
             name="Category"
             value={data.Category}
             onChange={handleChange}
@@ -210,7 +214,11 @@ const AddBookPage = () => {
             <option value="Thriller">Thriller</option>
           </select>
 
+          <label htmlFor="condition-select" className="hidden text-sm font-medium text-gray-700">
+            Book Condition
+          </label>
           <select
+            id="condition-select"
             name="condition"
             value={data.condition}
             onChange={handleChange}
