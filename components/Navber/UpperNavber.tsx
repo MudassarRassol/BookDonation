@@ -112,12 +112,6 @@ const UpperNavbar = () => {
           icon: <SettingOutlined />, 
           onClick: () => router.push('/pages/favorites') 
         },
-        { 
-          key: "donations", 
-          label: "Donations History", 
-          icon: <HistoryOutlined />, 
-          onClick: () => router.push('/pages/donationhistory') 
-        },
       { 
         key: "logout", 
         label: "Logout", 

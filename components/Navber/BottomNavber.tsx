@@ -12,7 +12,8 @@ import {
   ContactsOutlined,
   PlusOutlined,
   ShoppingCartOutlined,
-  MessageOutlined,
+  HistoryOutlined,
+  AccountBookOutlined,
 } from "@ant-design/icons";
 
 const BottomNavbar = () => {
@@ -72,15 +73,15 @@ const BottomNavbar = () => {
             icon: <PlusOutlined className="text-lg" />,
           },
           {
+            name: "My Books",
+            path: "/pages/BookBrowserPage",
+            icon: <AccountBookOutlined className="text-lg" />,
+          },
+          {
             name: "Requests",
             path: "/pages/books-requests",
             icon: <BookOutlined className="text-lg" />,
-          },
-          {
-            name: "Message",
-            path: "/pages/profile",
-            icon: <MessageOutlined className="text-lg" />,
-          },
+          }
         ];
       case "recipient":
         return [
@@ -100,9 +101,9 @@ const BottomNavbar = () => {
             icon: <ShoppingCartOutlined className="text-lg" />,
           },
           {
-            name: "Message",
-            path: "/pages/profile",
-            icon: <MessageOutlined className="text-lg" />,
+            name: "History", 
+            path: "/pages/donationhistory",
+            icon: <HistoryOutlined className="text-lg" />,
           },
         ];
       default:

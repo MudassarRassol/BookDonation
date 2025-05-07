@@ -153,10 +153,12 @@ export default function BookDetailsPage() {
   const handleDelete = async () => {
     try {
       setDeleting(true);
+      setLoading(true);
       const response = await axios.delete(`/api/book/bookdeletbyid/${id}`);
       if (response.data.success) {
+        setLoading(false);
         message.success("Book deleted successfully");
-        router.push("/pages/book/All-my-books");
+        router.push("/pages/book/BookBrowserPage");
       } else {
         message.error(response.data.message || "Failed to delete book");
       }

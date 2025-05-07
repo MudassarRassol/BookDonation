@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 interface Donation {
   key: string;
   bookName: string;
-  bookImage: string;
+  bookImage: string | null;
   donorName: string;
   donorEmail: string;
   userEmail: string;
@@ -37,8 +37,11 @@ export default function AllDonationsPage() {
     const fetchDonations = async () => {
       try {
         const res = await axios.get('/api/admin/alldonation');
-        console.log(res.data.data);
-        setDonations(res.data.data);
+        const processedData = res.data.data.map((donation: Donation) => ({
+          ...donation,
+          bookImage: donation.bookImage || null // Convert empty string to null
+        }));
+        setDonations(processedData);
       } catch {
         setError('Failed to fetch donations');
       } finally {
@@ -57,12 +60,10 @@ export default function AllDonationsPage() {
   };
 
   const filteredDonations = donations.filter((donation) => {
-    // Tab filter
     if (activeTab !== 'all' && donation.status.toLowerCase() !== activeTab) {
       return false;
     }
     
-    // Search filter
     if (searchText) {
       const lowerSearch = searchText.toLowerCase();
       if (
@@ -75,15 +76,10 @@ export default function AllDonationsPage() {
       }
     }
     
-    // Date filter
-    if (dateFilter) {
-      const donationDate = dayjs(donation.date);
-      if (!donationDate.isSame(dateFilter, 'day')) {
-        return false;
-      }
+    if (dateFilter && !dayjs(donation.date).isSame(dateFilter, 'day')) {
+      return false;
     }
     
-    // Donor filter
     if (donorFilter && donation.donorEmail !== donorFilter) {
       return false;
     }
@@ -96,18 +92,35 @@ export default function AllDonationsPage() {
       title: 'Cover',
       dataIndex: 'bookImage',
       key: 'bookImage',
-      render: (_: unknown, record: Donation) => (
-        <Avatar
-          src={record.bookImage}
-          alt={record.bookName}
-          shape="square"
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: 4,
-            objectFit: 'cover',
-          }}
-        />
+      render: (image: string | null, record: Donation) => (
+        image ? (
+          <Avatar
+            src={image}
+            alt={record.bookName}
+            shape="square"
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 4,
+              objectFit: 'cover',
+            }}
+          />
+        ) : (
+          <Avatar
+            shape="square"
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 4,
+              backgroundColor: '#f0f2f5',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {record.bookName.charAt(0).toUpperCase()}
+          </Avatar>
+        )
       ),
       width: 80,
     },
@@ -133,30 +146,30 @@ export default function AllDonationsPage() {
     },
   ];
 
-  if (loading)
+  if (loading) {
     return (
       <div className="w-full h-screen flex items-center justify-center">
-       <BookLoader />
+        <BookLoader />
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
       <div className="w-full h-screen flex items-center justify-center text-red-500">
         {error}
       </div>
     );
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">All Donations</h1>
         <p className="text-gray-600">View and filter donations by status</p>
       </div>
 
-      {/* Filters */}
-      <Card hoverable className="shadow-sm hover:shadow-md transition-all mb-6">
+      <Card className="shadow-sm hover:shadow-md transition-all mb-6">
         <Space size="large" wrap>
           <Input
             placeholder="Search by book, donor, or email"
@@ -170,7 +183,7 @@ export default function AllDonationsPage() {
           <DatePicker
             placeholder="Filter by date"
             value={dateFilter}
-            onChange={(date) => setDateFilter(date)}
+            onChange={setDateFilter}
             style={{ width: 200 }}
             allowClear
           />
@@ -180,11 +193,13 @@ export default function AllDonationsPage() {
             style={{ width: 250 }}
             allowClear
             value={donorFilter}
-            onChange={(value) => setDonorFilter(value)}
-            options={Array.from(new Set(donations.map(d => d.donorEmail))).map(email => ({
-              value: email,
-              label: email,
-            }))}
+            onChange={setDonorFilter}
+            options={Array.from(new Set(donations.map(d => d.donorEmail)))
+              .filter(email => email)
+              .map(email => ({
+                value: email,
+                label: email,
+              }))}
             showSearch
             optionFilterProp="label"
           />
@@ -199,11 +214,10 @@ export default function AllDonationsPage() {
         </Space>
       </Card>
 
-      {/* Tabs for Filtering */}
-      <Card hoverable className="shadow-sm hover:shadow-md transition-all">
+      <Card className="shadow-sm hover:shadow-md transition-all">
         <Tabs
           activeKey={activeTab}
-          onChange={(key) => setActiveTab(key)}
+          onChange={setActiveTab}
           items={[
             { key: 'all', label: 'All Donations' },
             { key: 'pending', label: 'Pending' },
@@ -212,7 +226,6 @@ export default function AllDonationsPage() {
           ]}
         />
 
-        {/* Table */}
         <Table
           columns={columns}
           dataSource={filteredDonations}

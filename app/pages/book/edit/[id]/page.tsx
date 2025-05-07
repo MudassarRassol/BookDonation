@@ -259,9 +259,6 @@ const EditBookPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-md font-medium text-gray-700 mb-1">
-                      Author
-                    </label>
                     <Input
                       name="author"
                       type="text"
@@ -274,9 +271,6 @@ const EditBookPage = () => {
                   </div>
                   <br />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Condition
-                    </label>
                     <select
                       name="condition"
                       value={data.condition}

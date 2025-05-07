@@ -10,7 +10,7 @@ export async function PUT(
 ) {
   await connectDB();
   try {
-    const bookId = params.id;
+    const { id: bookId } = await params;
     const userId = req.headers.get("userid");
 
     // Validate inputs

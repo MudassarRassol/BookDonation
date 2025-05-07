@@ -12,7 +12,13 @@ export async function GET(
   await connectDB();
 
 
-  const bookId = params.id;
+  const { id: bookId } = await params;
+  if (!bookId) {
+    return NextResponse.json(
+      { success: false, message: "Book ID is required" },
+      { status: 400 }
+    );
+  }
 
   try {
     if (!mongoose.Types.ObjectId.isValid(bookId)) {

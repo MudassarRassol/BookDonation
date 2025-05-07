@@ -5,7 +5,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
 import { Spin, Tabs, Badge, Empty, Alert, Avatar, message } from "antd";
-import { LoadingOutlined, EyeOutlined, UserOutlined } from "@ant-design/icons";
+import { LoadingOutlined, EyeOutlined, UserOutlined,ExclamationCircleOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -54,7 +54,6 @@ const DonationHistoryPage = () => {
     try {
       setLoading(true);
       const response = await axios.get("/api/donation/donationhistory");
-      
       if (response.status !== 200) {
         throw new Error(response.data.error || "Failed to load history");
       }
@@ -255,104 +254,143 @@ const DonationHistoryPage = () => {
             </div>
           ) : (
             <div className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredDonations.map((donation) => (
-                <div
-                  key={donation._id}
-                  className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
-                >
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={donation.bookid.bookimg || "/book-placeholder.jpg"}
-                      alt={donation.bookid.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority={false}
-                    />
-                    <div className="absolute top-2 right-2">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          donation.status
-                        )}`}
-                      >
-                        {donation.status.charAt(0).toUpperCase() +
-                          donation.status.slice(1)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
-                        {donation.bookid.title}
-                      </h3>
-                      <div className="flex space-x-2">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${getConditionColor(
-                            donation.bookid.condition
-                          )}`}
-                        >
-                          {donation.bookid.condition}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center mb-3 justify-between">
-                      <p className="text-sm text-gray-600 mb-1">
-                        by {donation.bookid.author}
-                      </p>
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${getCategoryColor(
-                          donation.bookid.Category
-                        )}`}
-                      >
-                        {donation.bookid.Category}
-                      </span>
-                    </div>
-
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-4 h-12">
-                      {donation.bookid.description}
-                    </p>
-
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        {(donation.donorId?.userdetailsId?.profilephoto || donation.userId?.userdetailsId?.profilephoto) ? (
-                          <Avatar
-                            src={role === 'donor' 
-                              ? donation.userId?.userdetailsId?.profilephoto 
-                              : donation.donorId?.userdetailsId?.profilephoto}
-                            size={30}
-                            className="mr-2"
-                          />
-                        ) : (
-                          <Avatar
-                            icon={<UserOutlined />}
-                            size="small"
-                            className="mr-2"
-                          />
-                        )}
-                        <span className="text-sm text-gray-600">
-                          {role === 'donor' 
-                            ? `Requested by ${donation.userId?.userdetailsId?.username || "Anonymous"}` 
-                            : role === 'recipient' 
-                              ? donation.donorId?.userdetailsId?.username || "Anonymous"
-                              : "Anonymous"}
-                        </span>
-                      </div>
-
-                      <Link
-                        href={`/pages/book/${donation.bookid._id}`}
-                        className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
-                        prefetch={false}
-                      >
-                        <EyeOutlined className="mr-1" />
-                        View
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
+  {filteredDonations.map((donation) => (
+    <div
+      key={donation._id}
+      className={`bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 ${
+        !donation.bookid ? 'opacity-75' : ''
+      }`}
+    >
+      {donation.bookid ? (
+        <>
+          <div className="relative h-48 w-full">
+            <Image
+              src={donation.bookid.bookimg || "/book-placeholder.jpg"}
+              alt={donation.bookid.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={false}
+            />
+            <div className="absolute top-2 right-2">
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                  donation.status
+                )}`}
+              >
+                {donation.status.charAt(0).toUpperCase() +
+                  donation.status.slice(1)}
+              </span>
             </div>
+          </div>
+
+          <div className="p-4">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
+                {donation.bookid.title}
+              </h3>
+              <div className="flex space-x-2">
+                <span
+                  className={`px-2 py-1 rounded text-xs font-medium ${getConditionColor(
+                    donation.bookid.condition
+                  )}`}
+                >
+                  {donation.bookid.condition}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center mb-3 justify-between">
+              <p className="text-sm text-gray-600 mb-1">
+                by {donation.bookid.author}
+              </p>
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${getCategoryColor(
+                  donation.bookid.Category
+                )}`}
+              >
+                {donation.bookid.Category}
+              </span>
+            </div>
+
+            <p className="text-sm text-gray-500 line-clamp-2 mb-4 h-12">
+              {donation.bookid.description}
+            </p>
+
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                {(donation.donorId?.userdetailsId?.profilephoto || donation.userId?.userdetailsId?.profilephoto) ? (
+                  <Avatar
+                    src={role === 'donor' 
+                      ? donation.userId?.userdetailsId?.profilephoto 
+                      : donation.donorId?.userdetailsId?.profilephoto}
+                    size={30}
+                    className="mr-2"
+                  />
+                ) : (
+                  <Avatar
+                    icon={<UserOutlined />}
+                    size="small"
+                    className="mr-2"
+                  />
+                )}
+                <span className="text-sm text-gray-600">
+                  {role === 'donor' 
+                    ? `Requested by ${donation.userId?.userdetailsId?.username || "Anonymous"}` 
+                    : role === 'recipient' 
+                      ? donation.donorId?.userdetailsId?.username || "Anonymous"
+                      : "Anonymous"}
+                </span>
+              </div>
+
+              <Link
+                href={`/pages/book/${donation.bookid._id}`}
+                className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+                prefetch={false}
+              >
+                <EyeOutlined className="mr-1" />
+                View
+              </Link>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="p-4 h-full flex flex-col justify-center items-center text-center">
+          <div className="h-48 w-full bg-gray-100 flex items-center justify-center">
+            <ExclamationCircleOutlined className="text-4xl text-gray-400" />
+          </div>
+          <div className="p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Book No Longer Available
+            </h3>
+            <p className="text-sm text-gray-500 mb-4">
+              This book has been deleted by the user
+            </p>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Avatar
+                  icon={<UserOutlined />}
+                  size="small"
+                  className="mr-2"
+                />
+                <span className="text-sm text-gray-600">
+                  {role === 'donor' 
+                    ? `Requested by ${donation.userId?.userdetailsId?.username || "Anonymous"}` 
+                    : role === 'recipient' 
+                      ? donation.donorId?.userdetailsId?.username || "Anonymous"
+                      : "Anonymous"}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-gray-400">
+                Deleted
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  ))}
+</div>
           )}
         </div>
       </div>

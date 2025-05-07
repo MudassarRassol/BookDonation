@@ -8,19 +8,16 @@ import {
   BookOutlined,
   UserOutlined,
   GiftOutlined,
-
   LogoutOutlined,
   MenuOutlined,
   UserOutlined as UserIcon
 } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Books from '@/components/admin/BooksTable/page';
-
 import AllDonationsPage from '@/components/admin/DonationsTable/page';
 import UserManagementTable from '@/components/admin/UsersTable/page';
-const { Header, Content, Sider } = Layout;
 
-// ... (keep your existing interfaces and mock data)
+const { Header, Content, Sider } = Layout;
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -28,9 +25,9 @@ export default function AdminDashboard() {
   const [selectedKey, setSelectedKey] = useState('1');
   const [loading, setLoading] = useState(false);
   const [screenWidth, setScreenWidth] = useState<number>(0);
-  // Authentication Check (Mock)
   const isAdmin = true; // Replace with real auth check
 
+  // Set initial screen width and handle resize
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setScreenWidth(window.innerWidth);
@@ -40,6 +37,7 @@ export default function AdminDashboard() {
     }
   }, []);
 
+  // Redirect if not admin
   useEffect(() => {
     if (!isAdmin) {
       router.push('/login');
@@ -64,9 +62,7 @@ export default function AdminDashboard() {
       });
 
       if (response.ok) {
-        // Clear local storage
         localStorage.clear();
-        // Redirect to login
         router.push('/login');
       } else {
         message.error('Logout failed');
@@ -91,27 +87,37 @@ export default function AdminDashboard() {
 
   const isMobile = screenWidth < 768;
 
-  const userMenu = (
-    <Menu>
-      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
+  const userMenu = {
+    items: [
+      {
+        key: 'logout',
+        icon: <LogoutOutlined />,
+        label: 'Logout',
+        onClick: handleLogout
+      }
+    ]
+  };
 
-  if (!isAdmin) return <Spin fullscreen />;
+  if (!isAdmin) return <Spin tip="Loading...">
+  <div>Content being loaded...</div>
+</Spin>
+;
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout className="min-h-screen w-full">
+      {/* Fixed Sidebar */}
       <Sider 
         collapsible 
         collapsed={collapsed} 
         onCollapse={setCollapsed}
         breakpoint="lg"
         collapsedWidth={isMobile ? 0 : 80}
+        width={250}
+        className="fixed h-full overflow-y-auto z-20"
+        trigger={null}
       >
-        <div className="text-white text-xl font-bold p-4">
-          {collapsed ? 'AD' : 'ADMIN'}
+        <div className="text-white text-xl font-bold p-4 h-16 flex items-center justify-center">
+          {collapsed ? 'AD' : 'ADMIN DASHBOARD'}
         </div>
         <Menu
           theme="dark"
@@ -119,55 +125,59 @@ export default function AdminDashboard() {
           mode="inline"
           items={menuItems}
           onSelect={({ key }) => setSelectedKey(key)}
+          className="h-[calc(100%-64px)] border-r-0"
         />
       </Sider>
 
-      <Layout>
-        <Header style={{ 
-          padding: 0, 
-          background: '#fff',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingLeft: isMobile ? 16 : 24,
-          paddingRight: isMobile ? 16 : 24,
-        }}>
-          {isMobile && (
-            <Button 
-              type="text" 
-              icon={<MenuOutlined />} 
-              onClick={() => setCollapsed(!collapsed)}
-              style={{ marginRight: 16 }}
-            />
-          )}
+      {/* Main Content Area with dynamic margin */}
+      <Layout 
+        className={`transition-all duration-200 min-h-screen ${collapsed ? 'ml-[80px]' : 'ml-[250px]'}`}
+        style={{ background: '#f0f2f5' }}
+      >
+        {/* Fixed Header */}
+        <Header className="fixed top-0 right-0 w-[calc(100%-250px)] z-10 bg-white shadow-sm flex items-center justify-between px-6 h-16" 
+          style={{ 
+            width: collapsed ? 'calc(100% - 80px)' : 'calc(100% - 250px)',
+            transition: 'width 0.2s'
+          }}
+        >
+          <div className="flex items-center">
+            {isMobile && (
+              <Button 
+                type="text" 
+                icon={<MenuOutlined />} 
+                onClick={() => setCollapsed(!collapsed)}
+                className="mr-4"
+              />
+            )}
+          </div>
           
-          <div className='flex-1'></div>
-          
-          <Dropdown overlay={userMenu} placement="bottomRight">
+          <Dropdown menu={userMenu} placement="bottomRight">
             <Button 
               type="text" 
               icon={<UserIcon />} 
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center',
-                height: '100%'
-              }}
+              className="flex items-center"
             >
-              {!isMobile && 'Admin'}
+              {!isMobile && 'Admin User'}
             </Button>
           </Dropdown>
         </Header>
 
-        <Content className="m-0 md:m-4">
-          <div className="p-2 md:p-6 bg-white min-h-[calc(100vh-32px)]">
+        {/* Scrollable Content */}
+        <Content className="mt-16 p-6 overflow-auto">
+          <div className="bg-white rounded-lg shadow p-6 min-h-[calc(100vh-112px)]">
             {loading ? (
-              <Spin size="large" className="w-full mt-8" />
+              <div className="flex justify-center items-center h-[300px]">
+                <Spin size='large' >
+                Loading content...
+                </Spin>
+              </div>
             ) : (
               renderContent()
             )}
           </div>
         </Content>
       </Layout>
-    </Layout> 
+    </Layout>
   );
 }

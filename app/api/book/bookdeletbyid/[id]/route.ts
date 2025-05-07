@@ -14,7 +14,7 @@ export async function DELETE(
     await connectDB();
     
     try {
-      const bookId = params.id;
+      const { id: bookId } = await params;
       const userId = req.headers.get('userid');
       
       // Validate inputs
@@ -44,7 +44,8 @@ export async function DELETE(
       // Chain deletion operations
       const deletedBook = await Promise.all([
         Book.findByIdAndDelete(bookId),
-        Bookcheck.findOneAndDelete({ bookid: bookId })
+        Bookcheck.findOneAndDelete({ bookid: bookId }),
+        
       ]).then(([deletedBook]) => deletedBook)
       .catch(err => {
         throw new Error(`Deletion transaction failed: ${err.message}`);
