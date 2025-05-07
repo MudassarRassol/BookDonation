@@ -13,7 +13,6 @@ import {
   PlusOutlined,
   ShoppingCartOutlined,
   HistoryOutlined,
-  AccountBookOutlined,
 } from "@ant-design/icons";
 
 const BottomNavbar = () => {
@@ -73,9 +72,9 @@ const BottomNavbar = () => {
             icon: <PlusOutlined className="text-lg" />,
           },
           {
-            name: "My Books",
+            name: "Books",
             path: "/pages/BookBrowserPage",
-            icon: <AccountBookOutlined className="text-lg" />,
+            icon: <BookOutlined className="text-lg" />,
           },
           {
             name: "Requests",
