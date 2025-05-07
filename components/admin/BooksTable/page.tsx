@@ -258,7 +258,6 @@ const Books = () => {
     <>
       <Card
         title="Books Management"
-        bordered={false}
         extra={
           <Space>
             <Input
@@ -299,7 +298,7 @@ const Books = () => {
             <span>Book Details</span>
           </Space>
         }
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
         width={screens.md ? 900 : '100%'}
@@ -346,7 +345,7 @@ const Books = () => {
 
               <Divider orientation="left" plain>Owner Information</Divider>
               
-              <Card bodyStyle={{ padding: 16 }}>
+              <Card className='p-[16px]'>
                 <Space size="large">
                   <Avatar 
                     src={selectedBook.userId?.userdetailsId?.profilephoto} 
