@@ -2,14 +2,14 @@
 "use client"
 import { Spin } from "antd";
 import dynamic from 'next/dynamic';
-import { useUserRole } from '@/components/useUserRole';
+import  useUserRole  from '@/components/useUserRole';
 
 // Dynamically import client-side only components
 const UpperNavbar = dynamic(() => import("@/components/Navber/UpperNavber"), { ssr: false });
 const BottomNavbar = dynamic(() => import("@/components/Navber/BottomNavber"), { ssr: false });
 const AdminDashboard = dynamic(() => import("./Admin"), { ssr: false });
 
-export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
+function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { isAdmin, isLoading } = useUserRole();
 
   if (isLoading || isAdmin === null) {
@@ -37,3 +37,5 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     </div>
   );
 }
+
+export default LayoutWrapper;

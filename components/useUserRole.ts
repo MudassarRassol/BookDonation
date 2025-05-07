@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
 
-export function useUserRole() {
+function useUserRole() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { role } = useSelector((state: RootState) => state.user);
@@ -17,3 +17,6 @@ export function useUserRole() {
 
   return { isAdmin, isLoading };
 }
+
+
+export default useUserRole;
