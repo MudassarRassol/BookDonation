@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Head from 'next/head';
 import ceo from "@/public/WhatsApp Image 2025-05-09 at 01.08.50_cc869c93.jpg"
+import aboutimg from "@/assests/pexels-rdne-8364640.jpg"
 const page = () => {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -63,7 +64,7 @@ const page = () => {
             >
               <div className="relative  h-[100vh] w-full rounded-xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/public/next.svg" // Replace with your image path
+                  src={aboutimg} // Replace with your image path
                   alt="Team donating books"
                   width={300}
                   height={400}
