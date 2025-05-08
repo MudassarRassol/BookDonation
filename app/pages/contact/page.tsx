@@ -4,9 +4,8 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import Image from 'next/image';
 import Head from 'next/head';
-
+import axios from 'axios';
 // Form validation schema
 const contactSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -23,9 +22,12 @@ const ContactUs = () => {
   });
 
   const onSubmit = async (data: ContactFormData) => {
-    // Here you would typically send the data to your backend
-    console.log('Form submitted:', data);
-    alert('Thank you for your message! We will get back to you soon.');
+    const res = await axios.post('/api/contact',data);
+    if(res.status == 200){
+      alert('Thank you for your message! We will get back to you soon.');
+    }else{
+      alert('pls try again somthing wrong')
+    }
     reset();
   };
 
@@ -256,28 +258,7 @@ const ContactUs = () => {
                 </div>
               </motion.div>
 
-              {/* Map Placeholder */}
-              <motion.div 
-                variants={itemVariants}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="relative h-64 w-full rounded-xl overflow-hidden shadow-lg mt-8"
-              >
-                <Image
-                  src="/map-placeholder.jpg" // Replace with your map image or use an actual map API
-                  alt="Our location on map"
-                  fill
-                  className="object-cover"
-                />
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="absolute bottom-4 right-4 bg-white px-4 py-2 rounded-lg shadow-md font-medium text-indigo-600"
-                >
-                  View Larger Map
-                </motion.button>
-              </motion.div>
+            
             </motion.div>
           </div>
 
