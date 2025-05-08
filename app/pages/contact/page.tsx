@@ -238,7 +238,7 @@ const ContactUs = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start">
+                {/* <div className="flex items-start">
                   <motion.div 
                     whileHover={{ scale: 1.1 }}
                     className="flex-shrink-0 bg-indigo-100 p-3 rounded-full"
@@ -248,12 +248,12 @@ const ContactUs = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </motion.div>
-                  {/* <div className="ml-4">
+                  <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Visit us</h3>
                     <p className="text-gray-600">123 Book Street</p>
                     <p className="text-gray-600">Literary City, LC 12345</p>
-                  </div> */}
-                </div>
+                  </div>
+                </div> */}
               </motion.div>
 
             

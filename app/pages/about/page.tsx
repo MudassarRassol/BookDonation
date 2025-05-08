@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Head from 'next/head';
-
+import ceo from "@/public/WhatsApp Image 2025-05-09 at 01.08.50_cc869c93.jpg"
 const page = () => {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -134,7 +134,7 @@ const page = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-12">Meet Our Team</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { name: 'Mudassar Rasool', role: 'Founder & CEO', image: '/StockCake-Books Awaiting Readers_1743162504.jpg' },
+                { name: 'Mudassar Rasool', role: 'Founder & CEO', image: '/WhatsApp Image 2025-05-09 at 01.08.50_cc869c93.jpg' },
                 { name: 'Sam Wilson', role: 'Community Manager', image: '/StockCake-Books Awaiting Readers_1743162504.jpg' },
                 { name: 'Taylor Smith', role: 'Tech Lead', image: '/StockCake-Books Awaiting Readers_1743162504.jpg' },
               ].map((member, index) => (
