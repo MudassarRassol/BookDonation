@@ -74,7 +74,9 @@ export default function BookDetailsPage() {
   const fetchBook = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/book/bookdetailsbyid/${id}`);
+      const response = await axios.post(`/api/book/bookdetailsbyid`,{
+          bookId: id
+      });
 
       if (response.status === 200) {
         const bookData = response.data.data;
@@ -159,11 +161,16 @@ export default function BookDetailsPage() {
     try {
       setDeleting(true);
       setLoading(true);
-      const response = await axios.delete(`/api/book/bookdeletbyid/${id}`);
+      const response = await axios.delete(`/api/book/bookdeletbyid`,{
+        data: {
+          bookId: id,
+        },
+      });
       if (response.data.success) {
         setLoading(false);
+   
         message.success("Book deleted successfully");
-        router.push("/pages/book/BookBrowserPage");
+        router.push("/pages/BookBrowserPage");
       } else {
         message.error(response.data.message || "Failed to delete book");
       }

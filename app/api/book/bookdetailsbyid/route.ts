@@ -5,14 +5,13 @@ import UserDetails from "@/models/UserDetails";
 import User from "@/models/UserSchema";
 import mongoose from "mongoose";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+export async function POST(
+  req: NextRequest
 ) {
   await connectDB();
-
-
-  const { id: bookId } = await params;
+  const body =   await req.json();
+  const bookId = body.bookId; // Match the key in your frontend request
+  console.log(bookId)
   if (!bookId) {
     return NextResponse.json(
       { success: false, message: "Book ID is required" },

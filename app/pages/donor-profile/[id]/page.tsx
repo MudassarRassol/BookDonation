@@ -46,7 +46,9 @@ const DonorProfilePage = () => {
       }
 
       try {
-        const response = await axios.get(`/api/donorprofile/${id}`);
+        const response = await axios.post(`/api/donorprofile`,{
+          donorId : id
+        });
         setUserData(response.data);
       } catch (error) {
         console.error('Error fetching donor data:', error);
@@ -64,7 +66,7 @@ const DonorProfilePage = () => {
 
   if (!id) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-8 text-center">
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-8 text-center md:mt-20">
         <p className="text-red-500 text-lg">Invalid donor ID.</p>
       </div>
     );
@@ -151,7 +153,7 @@ const DonorProfilePage = () => {
                 <div className="mt-2 flex justify-between">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-gray-800">{donorbooks?.length || 0}</p>
-                    <p className="text-xs text-gray-500">Books Donated</p>
+                    <p className="text-xs text-gray-500">Donor Books  </p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-gray-800">

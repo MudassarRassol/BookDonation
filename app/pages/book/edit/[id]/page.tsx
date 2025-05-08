@@ -17,6 +17,7 @@ interface BookData {
   description: string;
   bookimg?: string;
   Category?: string;
+  bookId?: string; // Added bookId property
 }
 
 const EditBookPage = () => {
@@ -49,6 +50,7 @@ const EditBookPage = () => {
             description: book.description,
             bookimg: book.bookimg,
             Category: book.Category,
+            bookId : book._id
           });
           if (book.bookimg) {
             setImagePreview(book.bookimg);
@@ -141,12 +143,15 @@ const EditBookPage = () => {
     formData.append("condition", data.condition);
     formData.append("description", data.description);
     formData.append("Category", data.Category || "");
+    if (data.bookId) {
+      formData.append("bookId", data.bookId);
+    }
     if (image) {
       formData.append("bookimg", image);
     }
 
     try {
-      const response = await axios.put(`/api/book/editbook/${id}`, formData, {
+      const response = await axios.put(`/api/book/editbook`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

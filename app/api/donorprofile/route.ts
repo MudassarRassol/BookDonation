@@ -4,14 +4,13 @@ import User from "@/models/UserSchema";
 import Book from "@/models/BookSchema";
 import connectDB from "@/libs/mongodb";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+export async function POST(
+  req: NextRequest
 ) {
   try {
     await connectDB();
-    const { id: donorId } = await params;
-
+    const body =   await req.json();
+    const donorId = body.donorId; // Match the key in your frontend request
     if (!mongoose.Types.ObjectId.isValid(donorId)) {
       return NextResponse.json(
         { success: false, message: "Invalid user ID format" },

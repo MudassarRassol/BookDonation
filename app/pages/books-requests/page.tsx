@@ -107,7 +107,9 @@ const RequestsPage = () => {
 
       // Make API call after optimistic update
       if (actionType === "cancel") {
-        await axios.delete(`/api/request/cancelrequest/${currentRequestId}`);
+        await axios.post(`/api/request/cancelrequest`,{
+          requestid : currentRequestId
+        });
         toast.success("Request cancelled successfully");
       } else {
         const formData = new FormData();

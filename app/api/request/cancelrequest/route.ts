@@ -3,18 +3,19 @@ import dbConnect from "@/libs/mongodb";
 import Donation from "@/models/DonationSchema";
 import Book from "@/models/BookSchema";
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
 
-export async function DELETE(req: NextRequest, { params }: Params) {
+
+export async function POST(req: NextRequest) {
   await dbConnect();
 
   try {
-    const { id } = await params;
-    console.log(id);
+
+
+    const body = await req.json();
+    const id = body.requestid;
+    console.log(
+      body,id
+    )
     if (!id) {
       return NextResponse.json({ success: false, error: "Request ID is required" });
     }

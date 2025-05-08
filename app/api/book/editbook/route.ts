@@ -5,21 +5,15 @@ import Book from "@/models/BookSchema";
 import mongoose from "mongoose";
 
 export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  req: NextRequest
 ) {
   await connectDB();
   try {
-    const { id: bookId } = await params;
+    // const body = await req.json();
+    // const bookId = body.bookId; // Match the key in your frontend request
     const userId = req.headers.get("userid");
 
-    // Validate inputs
-    if (!mongoose.Types.ObjectId.isValid(bookId)) {
-      return NextResponse.json(
-        { message: "Invalid book ID" },
-        { status: 400 }
-      );
-    }
+
 
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
       return NextResponse.json(
@@ -36,7 +30,19 @@ export async function PUT(
     const category = formData.get("Category");
     const description = formData.get("description");
     const bookimg = formData.get("bookimg") as File | null;
+    const bookId = formData.get("bookId");
     // Verify book exists and belongs to user
+
+
+        // Validate inputs
+        if (!bookId || !mongoose.Types.ObjectId.isValid(String(bookId))) {
+          return NextResponse.json(
+            { message: "Invalid book ID" },
+            { status: 400 }
+          );
+        }
+
+
     const existingBook = await Book.findOne({
       _id: bookId,
       userId

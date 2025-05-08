@@ -5,13 +5,13 @@ import mongoose from "mongoose";
 import Bookcheck from "@/models/BookCheckSchema";
 
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  req: NextRequest
 ) {
   await connectDB();
   
   try {
-    const { id: bookId } = params; // Removed 'await' since params is not a promise
+    const body = await req.json();
+    const bookId = body.bookId; // Match the key in your frontend request
     const userId = req.headers.get('userid');
     
     // Validate inputs
