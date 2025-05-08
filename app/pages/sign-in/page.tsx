@@ -56,7 +56,7 @@ const Page = () => {
         dispatch(setInfo(response.data.user.info));
         
         if (response.data.user.info === false) {
-          await router.push("/pages/userdetails/get-user-details");
+           router.push("/pages/userdetails/get-user-details");
         } else {
           dispatch(setImage(response.data.res.profilephoto));
           dispatch(setRole(response.data.res.role));
@@ -64,9 +64,9 @@ const Page = () => {
           
           const role = response.data.res.role;
           if (role === "admin") {
-            await router.push("/pages/admin");
+             router.push("/pages/admin");
           } else {
-            await router.push("/");
+             router.push("/");
           }
         }
       }

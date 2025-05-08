@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import axios from "axios";
 
 const transport = nodemailer.createTransport({
   service: "gmail",
@@ -21,13 +20,7 @@ interface EmailProps {
   decisionDate: string;
 }
 
-// Utility to convert image URL to base64
-const imageUrlToBase64 = async (imageUrl: string): Promise<string> => {
-  const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
-  const base64 = Buffer.from(response.data, "binary").toString("base64");
-  const mimeType = response.headers["content-type"];
-  return `data:${mimeType};base64,${base64}`;
-};
+
 
 const SendDonationStatusEmail = async ({
   email,
@@ -44,16 +37,14 @@ const SendDonationStatusEmail = async ({
     const subject = `📦 Your Book Donation Request Has Been ${status.toUpperCase()}`;
     const decisionColor = status === "approved" ? "#28a745" : "#dc3545";
     const statusText = status === "approved" ? "Approved ✅" : "Rejected ❌";
-
-    // Convert donor image to base64
-    const donorImageBase64 = await imageUrlToBase64(donorImage);
+;
 
     const mailOptions = {
       from: `"Book Donation" <${process.env.GMAIL_USER}>`,
       to: email,
       subject,
       html: `
-        <div style="background: #f4f4f4; padding: 40px; font-family: Arial, sans-serif;">
+        <div style="background: #f4f4f4; padding: 10px; font-family: Arial, sans-serif;">
           <div style="background: white; max-width: 600px; margin: auto; border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
             <img src="${bookImage}" alt="Book Image" style="width: 100%; height: auto; display: block;" />
             <div style="padding: 30px;">
@@ -68,7 +59,7 @@ const SendDonationStatusEmail = async ({
               <hr style="margin: 20px 0;" />
               <h3>🙋‍♂️ Donor Information:</h3>
               <img 
-                src="${donorImageBase64}" 
+                src="${donorImage}" 
                 alt="Donor Image" 
                 width="80" 
                 height="80" 

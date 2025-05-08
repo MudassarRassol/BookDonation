@@ -187,8 +187,7 @@ export default function FavoritesPage() {
                     <Image
                       src={book.bookimg || "/book-placeholder.jpg"}
                       alt={book.title}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      className="cursor-pointer"
+                      className="cursor-pointer aspect-square w-[100%] h-[100%] object-cover "
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       preview={false}
                       placeholder={

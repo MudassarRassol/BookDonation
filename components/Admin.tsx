@@ -16,10 +16,12 @@ import Books from '@/components/admin/BooksTable/page';
 import axios from 'axios';
 import AllDonationsPage from '@/components/admin/DonationsTable/page';
 import UserManagementTable from '@/components/admin/UsersTable/page';
-
+import { useDispatch } from 'react-redux';
+import {  clearLocalStorage } from "@/app/redux/counterSlice";
 const { Header, Content } = Layout;
 
 export default function AdminDashboard() {
+   const dispatch = useDispatch();
   const router = useRouter();
   const [selectedKey, setSelectedKey] = useState('1');
   const [loading, setLoading] = useState(false);
@@ -39,7 +41,7 @@ export default function AdminDashboard() {
     setIsAdmin(role === 'admin');
     
     if (role !== 'admin') {
-      router.push('/login');
+      router.push('/');
     }
     
     return () => window.removeEventListener('resize', checkScreenSize);
@@ -49,15 +51,14 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       const response = await axios.delete('/api/auth/logout');
-      
       if (response.status === 200) {
-        localStorage.clear();
-        window.location.href = '/sign-in';
+         dispatch(clearLocalStorage());
+        router.push('/');
       }
     } catch (error) {
       console.error('Logout error:', error);
       localStorage.clear();
-      window.location.href = 'pages/sign-in';
+      window.location.href = '/';
     } finally {
       setLoading(false);
       setMobileMenuVisible(false);

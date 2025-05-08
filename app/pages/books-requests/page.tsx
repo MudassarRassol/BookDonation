@@ -191,8 +191,8 @@ const RequestsPage = () => {
             <Link href="/pages/books" className="text-blue-500 hover:underline">
               Browse books to make a request
             </Link>
-            <Link href="/pages/donation/donationhistory" className="text-red-500 hover:underline">
-              Approved or Rejected Book In Donation History
+            <Link href="/pages/donationhistory" className="text-red-500 hover:underline">
+               Approved or Rejected Book In Donation History
             </Link>
           </div>
         )}

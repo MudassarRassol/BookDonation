@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
+import ChatWithDonorModal from "@/components/ChatWithDonorModal";
 import {
   Alert,
   Empty,
@@ -49,9 +50,11 @@ interface Book {
   bookownerphoto: string;
   Category: string;
   isFavorite?: boolean;
+  email?: string;
 }
 
 export default function BookDetailsPage() {
+  const [chatModalVisible, setChatModalVisible] = useState(false);
   const { id } = useParams();
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
@@ -62,6 +65,7 @@ export default function BookDetailsPage() {
   const [requestModalVisible, setRequestModalVisible] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+
 
   const { role, login, varify, userid } = useSelector(
     (state: RootState) => state.user
@@ -93,6 +97,7 @@ export default function BookDetailsPage() {
 
         setBook({
           ...bookData,
+          email : bookData.user?.email || "",
           bookownername: bookData.user?.userdetailsId?.username || "Anonymous",
           bookownerphoto: bookData.user?.userdetailsId?.profilephoto || "",
         });
@@ -205,7 +210,9 @@ export default function BookDetailsPage() {
       message.warning("Please login to chat with the donor");
       return;
     }
-    router.push(`/pages/chat/${book?.userId}`);
+    else{
+      setChatModalVisible(true);
+    }
   };
 
   const getConditionColor = () => {
@@ -385,7 +392,9 @@ export default function BookDetailsPage() {
               {role === "recipient" && (
                 <Tooltip
                   title={
-                    book.isFavorite ? "Remove from favorites" : "Add to favorites"
+                    book.isFavorite
+                      ? "Remove from favorites"
+                      : "Add to favorites"
                   }
                 >
                   <Button
@@ -456,7 +465,9 @@ export default function BookDetailsPage() {
                   </div>
                 </div>
                 <div>
-                  <h2 className="text-sm font-semibold text-gray-500">Author</h2>
+                  <h2 className="text-sm font-semibold text-gray-500">
+                    Author
+                  </h2>
                   <p className="text-lg text-gray-800 mt-1">{book.author}</p>
                 </div>
               </div>
@@ -485,7 +496,9 @@ export default function BookDetailsPage() {
                   </span>
                 </div>
                 <div>
-                  <h2 className="text-sm font-semibold text-gray-500">Status</h2>
+                  <h2 className="text-sm font-semibold text-gray-500">
+                    Status
+                  </h2>
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-1 ${
                       book.status === "Available"
@@ -516,7 +529,9 @@ export default function BookDetailsPage() {
                   Added {dayjs(book.createdAt).fromNow()} •{" "}
                   {dayjs(book.createdAt).format("MMMM D, YYYY")}
                 </p>
-                <Button
+                {
+                  role === 'recipient' && (
+                    <Button
                   icon={<MessageOutlined />}
                   onClick={handleChatWithDonor}
                   disabled={!book.userId}
@@ -524,6 +539,8 @@ export default function BookDetailsPage() {
                 >
                   Chat with Donor
                 </Button>
+                  )
+                }
               </div>
             </div>
           </div>
@@ -561,6 +578,19 @@ export default function BookDetailsPage() {
           will be notified of your request.
         </p>
       </Modal>
+ 
+        <ChatWithDonorModal
+          visible={chatModalVisible}
+          onCancel={() => setChatModalVisible(false)}
+          donorId={book.userId}
+          donorName={book.bookownername}
+          donorEmail={book.email || ""}
+          donorImage={book.bookownerphoto}
+          bookTitle={book.title}
+          bookImage={book.bookimg}
+          userId={userid || ""}
+        />
+
     </div>
   );
 }
