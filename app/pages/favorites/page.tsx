@@ -91,7 +91,7 @@ export default function FavoritesPage() {
         setLoading(false);
       }
     },
-    [ pagination]
+    [login, pagination]
   );
 
   const removeFavorite = async (bookId: string) => {
@@ -120,7 +120,7 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     fetchFavoriteBooks();
-  }, [fetchFavoriteBooks]);
+  }, []);
 
   if (loading && books.length === 0) {
     return (

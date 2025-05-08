@@ -70,7 +70,7 @@ const ContactUs = () => {
           {/* Header Section */}
           <motion.div variants={itemVariants} className="text-center mb-16">
             <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
-              Contact <span className="text-indigo-600">BookShare</span>
+              Contact <span className="">BookShare</span>
             </h1>
             <p className="mt-5 max-w-xl mx-auto text-xl text-gray-500">
               {`We'd`} love to hear from you! Reach out with questions or feedback.
@@ -219,8 +219,7 @@ const ContactUs = () => {
                   </motion.div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Email us</h3>
-                    <p className="text-gray-600">contact@bookshare.org</p>
-                    <p className="text-gray-600">support@bookshare.org</p>
+                    <p className="text-gray-600">bythebookdonation@gmail.com</p>
                   </div>
                 </div>
 
@@ -235,8 +234,7 @@ const ContactUs = () => {
                   </motion.div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Call us</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
-                    <p className="text-gray-600">Mon-Fri: 9am-5pm</p>
+                    <p className="text-gray-600">+923110758376</p>
                   </div>
                 </div>
 
@@ -250,11 +248,11 @@ const ContactUs = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </motion.div>
-                  <div className="ml-4">
+                  {/* <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Visit us</h3>
                     <p className="text-gray-600">123 Book Street</p>
                     <p className="text-gray-600">Literary City, LC 12345</p>
-                  </div>
+                  </div> */}
                 </div>
               </motion.div>
 
