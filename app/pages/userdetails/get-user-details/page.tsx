@@ -68,7 +68,7 @@ const Page = () => {
       dispatch(setReduxImage(response.data.user.profilephoto))
       dispatch(setRole(response.data.user.role))
       dispatch(setCity(response.data.user.city))
-      if (response.status === 201) {
+      if (response.status == 200) {
         setData({ username: "", city: "", address: "", role: "" });
         setImage(null);
         setImagePreview(null);
