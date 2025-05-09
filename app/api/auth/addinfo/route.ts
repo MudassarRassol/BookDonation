@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
         await User.findByIdAndUpdate({_id:userId},{info:true,userdetailsId:user._id})
       }
 
-      return NextResponse.json({ message: "User info added", user }, { status: 201 });
+      return NextResponse.json({ message: "User info added", user });
     }
 
     // Save to database
