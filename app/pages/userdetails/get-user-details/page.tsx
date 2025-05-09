@@ -6,7 +6,7 @@ import Button from "@/components/Button";
 import axios from "axios";
 import Input from "@/components/Input";
 import { useRouter } from "next/navigation";
-import { setImage as setReduxImage, setRole, setCity , setVarify } from "@/app/redux/counterSlice";
+import { setImage as setReduxImage, setRole, setCity , setInfo } from "@/app/redux/counterSlice";
 import { useDispatch } from "react-redux";
 const Page = () => {
   const dispatch = useDispatch();
@@ -68,8 +68,8 @@ const Page = () => {
       dispatch(setReduxImage(response.data.user.profilephoto))
       dispatch(setRole(response.data.user.role))
       dispatch(setCity(response.data.user.city))
-      dispatch(setVarify('true'))
-      router.push('/pages/profile')
+      dispatch(setInfo(true))
+
       if (response.status == 200) {
         setData({ username: "", city: "", address: "", role: "" });
         setImage(null);
@@ -79,6 +79,7 @@ const Page = () => {
       } else {
         setError(response.data.message);
       }
+      router.push('/pages/profile')
     } catch (err: unknown) {
       console.error("Error:", err);
       const errorMessage =
