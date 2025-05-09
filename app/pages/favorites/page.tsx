@@ -147,7 +147,7 @@ export default function FavoritesPage() {
           type="primary"
           size="large"
           className="mt-6"
-          onClick={() => router.push("/pages/book/BookBrowserPage")}
+          onClick={() => router.push("/book/BookBrowserPage")}
         >
           Discover Books
         </Button>
