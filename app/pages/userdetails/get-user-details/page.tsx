@@ -73,7 +73,7 @@ const Page = () => {
         setImage(null);
         setImagePreview(null);
         setError(null);
-        router.push("/");
+        router.push('/pages/profile')
       } else {
         setError(response.data.message);
       }
@@ -95,7 +95,7 @@ const Page = () => {
     <div className="w-full mt-4 md:mt-10  h-[85vh] md:h-[89vh] overflow-hidden flex items-center justify-center">
       <div className=" w-[100%] md:w-[450px] flex flex-col border-b-2 p-4 shadow-2xl relative">
         <div className=" absolute top-0 left-0  bg-red-100   z-50 my-4 p-2 " >
-          Information Complesiry
+          Information compulsory
         </div>
         {/* Image Upload Section */}
         <div className="m-auto relative mb-4 overflow-hidden">
