@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Head from 'next/head';
-import ceo from "@/public/WhatsApp Image 2025-05-09 at 01.08.50_cc869c93.jpg"
 import aboutimg from "@/assests/pexels-rdne-8364640.jpg"
 const page = () => {
   const containerVariants = {
@@ -66,10 +65,9 @@ const page = () => {
                 <Image
                   src={aboutimg} // Replace with your image path
                   alt="Team donating books"
-                  width={300}
-                  height={400}
+                  // width={'100%'}
                 //   fill
-                  className="object-cover"
+                  className="object-cover w-full h-[100%]"
                 //   priority
                 />
               </div>
@@ -135,9 +133,9 @@ const page = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-12">Meet Our Team</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { name: 'Mudassar Rasool', role: 'Founder & CEO', image: '@/public/WhatsApp Image 2025-05-09 at 01.08.50_cc869c93.jpg' },
-                { name: 'Sam Wilson', role: 'Community Manager', image: '/StockCake-Books Awaiting Readers_1743162504.jpg' },
-                { name: 'Taylor Smith', role: 'Tech Lead', image: '/StockCake-Books Awaiting Readers_1743162504.jpg' },
+                { name: 'Mudassar Rasool', role: 'Developer', image: '/WhatsApp Image 2025-05-09 at 11.15.05_948b6445.jpg' },
+                { name: 'Uzair Afzal', role: 'Documentation', image: '/WhatsApp Image 2025-05-09 at 05.44.19_d4e7ce3d.jpg' },
+                { name: 'Huzaifa', role: 'Testing', image: '/WhatsApp Image 2025-05-09 at 11.20.33_39ec9f9e.jpg' },
               ].map((member, index) => (
                 <motion.div
                   key={member.name}
@@ -146,12 +144,12 @@ const page = () => {
                   transition={{ delay: index * 0.2 }}
                   className="bg-white p-6 rounded-xl shadow-lg"
                 >
-                  <div className="relative h-48 w-full mx-auto rounded-full overflow-hidden mb-4">
+                  <div className="relative w-48 h-48  mx-auto rounded-full overflow-hidden mb-4">
                     <Image
                       src={member.image}
                       alt={member.name}
                       fill
-                      className="object-cover"
+                      className=" object-cover w-48 h-48 "
                     />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>

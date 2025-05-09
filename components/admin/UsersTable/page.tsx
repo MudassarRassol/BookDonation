@@ -162,7 +162,10 @@ const UserManagementTable = () => {
   }
 
   return (
-    <div className="p-4">
+    <div className=" p-2 md:p-4">
+      <div className=' text-2xl md:text-4xl  font-bold mb-2 ' >
+All User 
+      </div>
       <div className="mb-4">
         <Space size="large" wrap>
           <Input

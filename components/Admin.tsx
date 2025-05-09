@@ -154,8 +154,8 @@ export default function AdminDashboard() {
           />
         )}
 
-        <Content className="m-4">
-          <div className="p-6 bg-white min-h-[calc(100vh-64px)] rounded-lg shadow-sm">
+        <Content className="  md:m-4">
+          <div className="md:p-6 bg-white min-h-[calc(100vh-64px)] rounded-lg shadow-sm">
             {loading ? (
               <Spin size="large" className="w-full mt-8" />
             ) : (

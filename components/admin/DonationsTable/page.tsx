@@ -164,7 +164,7 @@ export default function AllDonationsPage() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="mb-8">
+      <div className="mb-8 p-3">
         <h1 className="text-3xl font-bold text-gray-800">All Donations</h1>
         <p className="text-gray-600">View and filter donations by status</p>
       </div>
