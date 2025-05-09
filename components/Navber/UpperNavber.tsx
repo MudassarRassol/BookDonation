@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import Image from "next/image";
 import logo from "@/assests/logo.png";
 import { Avatar, Dropdown, MenuProps } from "antd";
@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 const UpperNavbar = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const { login, role, image,Info } = useSelector((state: RootState) => state.user);
 
   // Load from localStorage on mount
@@ -35,6 +37,15 @@ const UpperNavbar = () => {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [dispatch, Info, router, login, role]);
+
+
+    const handleMouseLeave = () => {
+    setDropdownOpen(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setDropdownOpen(open);
+  };
 
   const logout = async () => {
     try {
@@ -148,7 +159,10 @@ const UpperNavbar = () => {
       <div className="fixed top-0 right-0 mt-2 md:mt-4 mr-4 gap-2 z-30">
         <div className="flex items-center justify-center gap-3 z-30">
           {login ? (
-            <Dropdown menu={{ items: getDropdownItems() }} trigger={["click"]}>
+            <Dropdown menu={{ items: getDropdownItems(),onMouseLeave: handleMouseLeave }} trigger={["click"]}
+             open={dropdownOpen}
+            onOpenChange={handleOpenChange}
+            >
               <Avatar 
                 src={image || "https://st3.depositphotos.com/9998432/13335/v/450/depositphotos_133352156-stock-illustration-default-placeholder-profile-icon.jpg"}
                 className="shadow-2xl cursor-pointer" 
