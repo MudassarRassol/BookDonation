@@ -190,7 +190,7 @@ const RequestsPage = () => {
         />
         {role === "recipient" && (
           <div className="flex flex-col" >
-            <Link href="/pages/books" className="text-blue-500 hover:underline">
+            <Link href="/pages/BookBrowserPage" className="text-blue-500 hover:underline">
               Browse books to make a request
             </Link>
             <Link href="/pages/donationhistory" className="text-red-500 hover:underline">
