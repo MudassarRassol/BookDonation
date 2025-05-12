@@ -40,10 +40,10 @@ const EditBookPage = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await axios.get(`/api/book/bookdetailsbyid`, {
-          bookid : id
-        }
-                                                                    );
+        const response = await axios.post(`/api/book/bookdetailsbyid`,{
+          bookId : id
+      }
+      );
         if (response.data.success) {
           const book = response.data.data;
           setData({
@@ -189,7 +189,7 @@ const EditBookPage = () => {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-50">
         <BookLoader/>
-        <p className="mt-4 text-lg text-gray-600">Loading book details...</p>
+        {/* <p className="mt-4 text-lg text-gray-600">Loading book details...</p> */}
       </div>
     );
   }

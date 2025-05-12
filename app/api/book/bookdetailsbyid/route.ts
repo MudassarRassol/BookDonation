@@ -9,7 +9,7 @@ export async function POST(
   req: NextRequest
 ) {
   await connectDB();
-  const body =   await req.json();
+  const body =  await req.json();
   const bookId = body.bookId; // Match the key in your frontend request
   console.log(bookId)
   if (!bookId) {
