@@ -40,10 +40,10 @@ const EditBookPage = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await axios.get(`/api/book/bookdetailsbyid`,
-                                        data{
-                                          id
-                                        });
+        const response = await axios.get(`/api/book/bookdetailsbyid`, {
+          bookid : id
+        }
+                                                                    );
         if (response.data.success) {
           const book = response.data.data;
           setData({
