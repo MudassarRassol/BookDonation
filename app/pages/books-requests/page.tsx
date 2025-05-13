@@ -147,11 +147,13 @@ const RequestsPage = () => {
 
       if (actionType === "approve") {
         try {
+          // Validate all form fields
           await form.validateFields();
         } catch (err) {
           console.log(err)
+          // Validation will automatically show error messages
           setIsProcessing(false);
-          return;
+          return; // Don't proceed if validation fails
         }
       }
 
@@ -189,7 +191,7 @@ const RequestsPage = () => {
         );
 
         if (actionType === "approve") {
-          const values = form.getFieldsValue();
+          const values = await form.validateFields(); // This will ensure we have valid values
           formData.append("donorMessage", values.message || "");
           formData.append("pickupLocation", values.location);
           formData.append("pickupDate", values.date.format("YYYY-MM-DD"));
@@ -341,7 +343,18 @@ const RequestsPage = () => {
               name="location"
               label="Pickup Location"
               rules={[
-                { required: true, message: "Please enter pickup location" },
+                { 
+                  required: true, 
+                  message: "Please enter pickup location" 
+                },
+                {
+                  validator(_, value) {
+                    if (!value || value.trim().length === 0) {
+                      return Promise.reject(new Error("Please enter a valid pickup location"));
+                    }
+                    return Promise.resolve();
+                  },
+                },
               ]}
             >
               <div className="flex gap-2">
@@ -370,7 +383,10 @@ const RequestsPage = () => {
                 name="date"
                 label="Pickup Date"
                 rules={[
-                  { required: true, message: "Please select pickup date" },
+                  { 
+                    required: true, 
+                    message: "Please select pickup date" 
+                  },
                   () => ({
                     validator(_, value) {
                       if (!value || value >= dayjs().startOf("day")) {
@@ -395,17 +411,35 @@ const RequestsPage = () => {
                 name="time"
                 label="Pickup Time"
                 rules={[
-                  { required: true, message: "Please select pickup time" },
+                  { 
+                    required: true, 
+                    message: "Please select pickup time" 
+                  },
                 ]}
               >
-                <TimePicker className="w-full" format="HH:mm" />
+                <TimePicker 
+                  className="w-full" 
+                  format="HH:mm" 
+                  minuteStep={15}
+                />
               </Form.Item>
             </div>
 
-            <Form.Item name="message" label="Message to Recipient (Optional)">
+            <Form.Item 
+              name="message" 
+              label="Message to Recipient (Optional)"
+              rules={[
+                {
+                  max: 500,
+                  message: "Message cannot exceed 500 characters",
+                },
+              ]}
+            >
               <TextArea
                 rows={3}
                 placeholder="Any special instructions for pickup..."
+                maxLength={500}
+                showCount
               />
             </Form.Item>
           </Form>
