@@ -6,11 +6,15 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
 import toast, { Toaster } from "react-hot-toast";
-import { Button, Modal } from "antd";
+import { Button, Modal, DatePicker, TimePicker, Input, Form } from "antd";
 import Link from "next/link";
-import { EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import BookLoader from "@/components/Loader/Loader";
-import im from "@/assests/hand-drawn-no-data-concept.png"
+import im from "@/assests/hand-drawn-no-data-concept.png";
+import dayjs from "dayjs";
+
+const { TextArea } = Input;
+
 interface BookRequest {
   _id: string;
   userId: {
@@ -54,6 +58,18 @@ const RequestsPage = () => {
     "approve" | "reject" | "cancel" | null
   >(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [form] = Form.useForm();
+  const [locationLoading, setLocationLoading] = useState(false);
+
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number | null;
+    longitude: number | null;
+    address: string | null;
+  }>({
+    latitude: null,
+    longitude: null,
+    address: null,
+  });
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -74,7 +90,54 @@ const RequestsPage = () => {
     fetchRequests();
   }, [role]);
 
-  // In your handleAction function, update as follows:
+  const getLocation = () => {
+    setLocationLoading(true);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const response = await axios.get(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const address = response.data.display_name || "Current location";
+            
+            setUserLocation({
+              latitude,
+              longitude,
+              address,
+            });
+
+            form.setFieldsValue({
+              location: address
+            });
+          } catch (error) {
+            console.error("Error getting address:", error);
+            setUserLocation({
+              latitude,
+              longitude,
+              address: null,
+            });
+            form.setFieldsValue({
+              location: "Current location (address not available)"
+            });
+          } finally {
+            setLocationLoading(false);
+          }
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          toast.error(
+            "Could not get your location. Please enter pickup location manually."
+          );
+          setLocationLoading(false);
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by your browser.");
+      setLocationLoading(false);
+    }
+  };
 
   const handleAction = async () => {
     if (!currentRequestId || !actionType) return;
@@ -82,18 +145,25 @@ const RequestsPage = () => {
     try {
       setIsProcessing(true);
 
-      // Optimistically update requests state
+      if (actionType === "approve") {
+        try {
+          await form.validateFields();
+        } catch (err) {
+          console.log(err)
+          setIsProcessing(false);
+          return;
+        }
+      }
+
       setRequests((prevRequests) => {
         if (!prevRequests) return null;
 
-        // For cancellation
         if (actionType === "cancel") {
           return prevRequests.filter(
             (request) => request._id !== currentRequestId
           );
         }
 
-        // For approve/reject
         return prevRequests.map((request) => {
           if (request._id === currentRequestId) {
             return {
@@ -105,10 +175,9 @@ const RequestsPage = () => {
         });
       });
 
-      // Make API call after optimistic update
       if (actionType === "cancel") {
-        await axios.post(`/api/request/cancelrequest`,{
-          requestid : currentRequestId
+        await axios.post(`/api/request/cancelrequest`, {
+          requestid: currentRequestId,
         });
         toast.success("Request cancelled successfully");
       } else {
@@ -119,14 +188,26 @@ const RequestsPage = () => {
           actionType === "approve" ? "approved" : "rejected"
         );
 
+        if (actionType === "approve") {
+          const values = form.getFieldsValue();
+          formData.append("donorMessage", values.message || "");
+          formData.append("pickupLocation", values.location);
+          formData.append("pickupDate", values.date.format("YYYY-MM-DD"));
+          formData.append("pickupTime", values.time.format("HH:mm"));
+          
+          if (userLocation.latitude && userLocation.longitude) {
+            formData.append("latitude", userLocation.latitude.toString());
+            formData.append("longitude", userLocation.longitude.toString());
+          }
+        }
+
         await axios.put("/api/donation/donormangerequest", formData);
         toast.success(`Request ${actionType}d successfully`);
       }
     } catch (err) {
-      // Revert optimistic update on error
       setRequests((prevRequests) => {
         if (!prevRequests) return null;
-        return [...prevRequests]; // Trigger re-render to refetch data
+        return [...prevRequests];
       });
 
       const errorMessage = axios.isAxiosError(err)
@@ -139,10 +220,14 @@ const RequestsPage = () => {
       setIsProcessing(false);
       setCurrentRequestId(null);
       setActionType(null);
+      form.resetFields();
+      setUserLocation({
+        latitude: null,
+        longitude: null,
+        address: null,
+      });
     }
   };
-
-  // Remove all fetchRequests() calls from the success blocks
 
   const showConfirmModal = (
     requestId: string,
@@ -182,19 +267,25 @@ const RequestsPage = () => {
     return (
       <div className="text-center py-8 h-[100vh] flex justify-center items-center flex-col">
         <h2 className="text-xl font-semibold md:mt-20">No requests found</h2>
-        <Image 
-        src={im}
-        alt="hand-drawn-no-data-concept.png"
-        width={300}
-        height={300}
+        <Image
+          src={im}
+          alt="hand-drawn-no-data-concept.png"
+          width={300}
+          height={300}
         />
         {role === "recipient" && (
-          <div className="flex flex-col" >
-            <Link href="/pages/BookBrowserPage" className="text-blue-500 hover:underline">
+          <div className="flex flex-col">
+            <Link
+              href="/pages/BookBrowserPage"
+              className="text-blue-500 hover:underline"
+            >
               Browse books to make a request
             </Link>
-            <Link href="/pages/donationhistory" className="text-red-500 hover:underline">
-               Approved or Rejected Book In Donation History
+            <Link
+              href="/pages/donationhistory"
+              className="text-red-500 hover:underline"
+            >
+              Approved or Rejected Book In Donation History
             </Link>
           </div>
         )}
@@ -203,13 +294,12 @@ const RequestsPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 py-8 md:mt-20">
+    <div className="mx-auto px-4 py-8 md:mt-20 max-w-7xl">
       <Toaster />
       <h1 className="text-2xl font-bold mb-6">
         {role === "donor" ? "Donation Requests" : "My Requests"}
       </h1>
 
-      {/* Confirmation Modal */}
       <Modal
         title={`Confirm ${actionType}`}
         open={!!actionType}
@@ -217,6 +307,12 @@ const RequestsPage = () => {
         onCancel={() => {
           setCurrentRequestId(null);
           setActionType(null);
+          form.resetFields();
+          setUserLocation({
+            latitude: null,
+            longitude: null,
+            address: null,
+          });
         }}
         confirmLoading={isProcessing}
         okText={
@@ -228,6 +324,7 @@ const RequestsPage = () => {
         }}
         cancelText="No"
         centered
+        width={actionType === "approve" ? 700 : 520}
       >
         <p className="my-4">
           {actionType === "approve" &&
@@ -237,13 +334,89 @@ const RequestsPage = () => {
           {actionType === "cancel" &&
             "Are you sure you want to cancel this request? This action cannot be undone."}
         </p>
+
+        {actionType === "approve" && (
+          <Form form={form} layout="vertical" className="mt-6">
+            <Form.Item
+              name="location"
+              label="Pickup Location"
+              rules={[
+                { required: true, message: "Please enter pickup location" },
+              ]}
+            >
+              <div className="flex gap-2">
+                <Input placeholder="Enter the pickup address" />
+                <Button 
+                  type="default" 
+                  onClick={getLocation}
+                  loading={locationLoading}
+                  icon={<EnvironmentOutlined />}
+                >
+                  Use My Location
+                </Button>
+              </div>
+              {userLocation.address && (
+                <div className="mt-2 text-sm text-green-600">
+                  <p>Detected location: {userLocation.address}</p>
+                  {userLocation.latitude && userLocation.longitude && (
+                    <p>Coordinates: {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}</p>
+                  )}
+                </div>
+              )}
+            </Form.Item>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Form.Item
+                name="date"
+                label="Pickup Date"
+                rules={[
+                  { required: true, message: "Please select pickup date" },
+                  () => ({
+                    validator(_, value) {
+                      if (!value || value >= dayjs().startOf("day")) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("Pickup date cannot be in the past")
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <DatePicker
+                  className="w-full"
+                  disabledDate={(current) =>
+                    current && current < dayjs().startOf("day")
+                  }
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="time"
+                label="Pickup Time"
+                rules={[
+                  { required: true, message: "Please select pickup time" },
+                ]}
+              >
+                <TimePicker className="w-full" format="HH:mm" />
+              </Form.Item>
+            </div>
+
+            <Form.Item name="message" label="Message to Recipient (Optional)">
+              <TextArea
+                rows={3}
+                placeholder="Any special instructions for pickup..."
+              />
+            </Form.Item>
+          </Form>
+        )}
       </Modal>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {userRequests.map((request) => (
           <div
             key={request._id}
-            className="bg-white rounded-lg shadow-md overflow-hidden relative"
+            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
             <div className="relative h-48 w-full">
               <Image
@@ -255,22 +428,24 @@ const RequestsPage = () => {
               />
             </div>
 
-            <div className="py-4 px-2 relative">
+            <div className="p-4 relative">
               <Link
                 href={`/pages/book/${request.bookid._id}`}
-                className="inset-shadow-[5px_0px_4px_#0000005c] rounded-l-3xl hover:scale-110 transition-all duration-500 flex items-center gap-1 absolute top-3 p-3 z-50 right-0"
+                className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2 hover:scale-110 transition-transform duration-300"
+                title="View Book Details"
               >
-                <EyeOutlined />
-                <span className="text-sm">View Details</span>
+                <EyeOutlined className="text-gray-700" />
               </Link>
 
-              <h3 className="font-semibold text-lg">{request.bookid.title}</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="font-semibold text-lg truncate">
+                {request.bookid.title}
+              </h3>
+              <p className="text-gray-600 text-sm truncate">
                 by {request.bookid.author}
               </p>
 
               <div className="flex items-center mt-3">
-                <div className="relative h-8 w-8 rounded-full overflow-hidden mr-2">
+                <div className="relative h-8 w-8 rounded-full overflow-hidden mr-2 border border-gray-200">
                   <Image
                     src={
                       role === "donor"
@@ -287,7 +462,7 @@ const RequestsPage = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-medium truncate">
                     {role === "donor"
                       ? `Requested by: ${request.userId.userdetailsId.username}`
                       : `Donor: ${request.bookid.userId.userdetailsId.username}`}
@@ -308,19 +483,22 @@ const RequestsPage = () => {
                       : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {request.status}
+                  {request.status.charAt(0).toUpperCase() +
+                    request.status.slice(1)}
                 </span>
 
                 {role === "donor" && request.status === "pending" ? (
                   <div className="space-x-2">
                     <Button
                       type="primary"
+                      size="small"
                       onClick={() => showConfirmModal(request._id, "approve")}
                     >
                       Approve
                     </Button>
                     <Button
                       danger
+                      size="small"
                       onClick={() => showConfirmModal(request._id, "reject")}
                     >
                       Reject
@@ -329,6 +507,7 @@ const RequestsPage = () => {
                 ) : (
                   <Button
                     danger
+                    size="small"
                     onClick={() => showConfirmModal(request._id, "cancel")}
                     disabled={request.status !== "pending"}
                   >
