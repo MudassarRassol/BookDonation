@@ -165,7 +165,7 @@ const UpperNavbar = () => {
             >
               <Avatar 
                 src={image || "https://st3.depositphotos.com/9998432/13335/v/450/depositphotos_133352156-stock-illustration-default-placeholder-profile-icon.jpg"}
-                className="shadow-2xl cursor-pointer mt-2 md:mt-0" 
+                className="shadow-2xl cursor-pointer mt-[12px] md:mt-0" 
                 size={52} 
               />
             </Dropdown>
