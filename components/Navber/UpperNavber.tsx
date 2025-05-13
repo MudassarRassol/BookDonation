@@ -170,7 +170,7 @@ const UpperNavbar = () => {
               />
             </Dropdown>
           ) : (
-            <Link href="/pages/sign-in" className="flex w-8 h-8 items-center justify-center cursor-pointer bg-white rounded-full">
+            <Link href="/pages/sign-in" className="flex w-8 h-8 items-center justify-center cursor-pointer bg-white rounded-full mt-4 md:mt-0">
               <LoginOutlined className="text-2xl" />
               {/* <span className="text-sm">Login</span> */}
             </Link>
