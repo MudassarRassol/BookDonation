@@ -234,7 +234,8 @@ const ContactUs = () => {
                   </motion.div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Call us</h3>
-                    <p className="text-gray-600">+923110758376</p>
+                    <p className="text-gray-600">+923110758376</p> 
+                    <p className="text-gray-600">+923286978405</p>
                   </div>
                 </div>
 
