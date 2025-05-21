@@ -236,6 +236,7 @@ const ContactUs = () => {
                     <h3 className="text-lg font-medium text-gray-900">Call us</h3>
                     <p className="text-gray-600">+923110758376</p> 
                     <p className="text-gray-600">+923286978405</p>
+                    <p className="text-gray-600">+923266617115</p>
                   </div>
                 </div>
 
