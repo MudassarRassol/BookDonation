@@ -1,5 +1,22 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+
+## 📚 Book Donation App
+
+A full-stack web application to donate and request books, built using Next.js, MongoDB, and Tailwind CSS.
+
+### ✨ Features
+- 📖 Browse and donate books
+- 🔍 Search by title or author
+- 👤 Authentication & user profile
+- 🗂️ Request management system
+
+  
+### 🛠️ Tech Stack
+Next.js | MongoDB | Tailwind CSS | Node.js
+
+
+
 ## Getting Started
 
 First, run the development server:
