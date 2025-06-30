@@ -133,7 +133,7 @@ const page = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-12">Meet Our Team</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { name: 'Mudassar Rasool', role: 'Developer', image: '/WhatsApp Image 2025-05-09 at 11.15.05_948b6445.jpg' },
+                { name: 'Mudassar Rasool', role: 'Developer', image: '/WhatsApp Image 2025-06-30 at 11.46.12 AM.jpeg' },
                 { name: 'Uzair Afzal', role: 'Documentation', image: '/WhatsApp Image 2025-05-09 at 05.44.19_d4e7ce3d.jpg' },
                 { name: 'Huzaifa', role: 'Testing', image: '/WhatsApp Image 2025-05-09 at 11.20.33_39ec9f9e.jpg' },
               ].map((member, index) => (
