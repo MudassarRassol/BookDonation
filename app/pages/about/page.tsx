@@ -149,6 +149,7 @@ const page = () => {
                       src={member.image}
                       alt={member.name}
                       fill
+                      placeholder="blur"
                       className=" object-cover w-48 h-48 "
                     />
                   </div>
