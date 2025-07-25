@@ -15,14 +15,32 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// ✅ Add the google-site-verification tag here
-export const metadata: Metadata = {
+export const metadata : Metadata= {
   title: "Book Aid",
-  // ✅ Add this part
-  other: {
-    "google-site-verification": "puY5XNFypoYkMliLXECJu1W6SEHLUkzp3v2746abguo",
+  description: "Find, donate, and receive books easily.",
+  openGraph: {
+    title: "Book Aid",
+    description: "A community-driven book donation platform.",
+    url: "https://book-donation-orcin.vercel.app",
+    siteName: "Book Aid",
+    images: [
+      {
+        url: "https://book-donation-orcin.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Book Aid",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Book Aid",
+    description: "A community-driven book donation platform.",
+    images: ["https://book-donation-orcin.vercel.app/og-image.png"],
   },
 };
+
 
 export default function RootLayout({
   children,
