@@ -152,7 +152,7 @@ const UpperNavbar = () => {
 
       {/* Title */}
       <h1 className="text-md md:text-xl font-bold text-center w-full mr-10 text-white drop-shadow-[1px_1px_1px_black]">
-        Book Donation
+        Book Aid
       </h1>
 
       {/* User Avatar */}
