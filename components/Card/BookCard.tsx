@@ -44,6 +44,12 @@ const categoryClasses = {
   Romance: 'bg-pink-100 text-pink-800',
   Mystery: 'bg-indigo-100 text-indigo-800',
   Thriller: 'bg-gray-100 text-gray-800',
+
+  // School-level categories
+  '9th': 'bg-sky-100 text-sky-800',
+  '10th': 'bg-emerald-100 text-emerald-800',
+  '11th': 'bg-lime-100 text-lime-800',
+  '12th': 'bg-amber-100 text-amber-800',
 };
 
 const BookCard = ({ book }: BookCardProps) => {
@@ -81,7 +87,7 @@ const BookCard = ({ book }: BookCardProps) => {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="font-semibold text-lg line-clamp-1">{book.title}</h3>
-            <p className="text-gray-600 text-sm">{book.author}</p>
+            <p className="text-gray-600 text-sm">{book.author === 'No author name provided' ? '' : book.author }</p>
             {userInfo && (
               <p className="text-gray-500 text-xs mt-1">
                 {userInfo.city && `${userInfo.city}`}
@@ -109,7 +115,7 @@ const BookCard = ({ book }: BookCardProps) => {
         </div>
 
         <p className="text-gray-500 text-sm mt-2 line-clamp-1">
-          {book.description}
+          {book.description === 'No description provided' ? '' : book.description }
         </p>
 
         <div className="mt-4 flex justify-between items-center">

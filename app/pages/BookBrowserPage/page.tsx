@@ -56,6 +56,10 @@ const categoryOptions = [
   { value: 'Romance', label: 'Romance' },
   { value: 'Mystery', label: 'Mystery' },
   { value: 'Thriller', label: 'Thriller' },
+  { value: '9th', label: '9th' },
+  { value: '10th', label: '10th' },
+  { value: '11th', label: '11th' },
+  { value: '12th', label: '12th' },
 ];
 
 const BookBrowserPage = () => {
@@ -95,7 +99,7 @@ const BookBrowserPage = () => {
           totalPages: response.data.pagination.totalPages
         });
       } else {
-        setError(response.data.message || "Failed to load books");
+        setError(response.status == 501 ? "No Intertnet Connection " : response.data.message);
       }
     } catch (err) {
       console.error(err);
@@ -154,11 +158,22 @@ const BookBrowserPage = () => {
     Available: "success", "Not Available": "error"
   }[status] || "default");
 
-  const getCategoryColor = (category: string) => ({
-    Fiction: "magenta", "Non-Fiction": "cyan", "Science Fiction": "purple",
-    Fantasy: "gold", Biography: "orange", History: "red", "Self-Help": "green",
-    Romance: "pink", Mystery: "geekblue", Thriller: "volcano"
-  }[category] || "default");
+ const getCategoryColor = (category: string) => ({
+  Fiction: "magenta",
+  "Non-Fiction": "cyan",
+  "Science Fiction": "purple",
+  Fantasy: "gold",
+  Biography: "orange",
+  History: "red",
+  "Self-Help": "green",
+  Romance: "pink",
+  Mystery: "geekblue",
+  Thriller: "volcano",
+  "9th": "blue",
+  "10th": "lime",
+  "11th": "green",
+  "12th": "purple"
+}[category] || "default");
 
   const statusCounts = getStatusCounts();
 

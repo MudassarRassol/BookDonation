@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
     if (role === 'recipient') {
       const userId = req.headers.get("userId");
       console.log("Recipient role detected, filtering books by city.");
-      console.log(books[0].userId.userdetailsId.city , user?.userdetailsId.city);
+      console.log( books.length > 0 ?  books[0].userId.userdetailsId.city + user?.userdetailsId.city  : 'NO BOOK FOUND');
        recipientBooks = books.filter((book) => book.userId.userdetailsId.city === user?.userdetailsId.city && book.userId._id.toString() !== userId?.toString());
       // recipientBooks = books.filter((book) => book.userId && user?.userdetailsId?.city && book.userId.userdetailsId.city === user.userdetailsId.city && userId && book.userId._id.toString() !== userId.toString());
     }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy } from 'react'
 import Video from '@/components/Home/Video'
 import Image from 'next/image'
 import mobilescrenn from "@/assests/StockCake-Books Awaiting Readers_1743162504.jpg"
@@ -12,10 +12,11 @@ const Homevideo = () => {
     <div className=" bg  block lg:hidden   absolute -z-10 inset-0 overflow-hidden">
       <Image  
       src={mobilescrenn}
-      alt="Stock Cake-Books Awaiting Readers"
+      alt="Home Book Aid Image"
       layout="fill"
       objectFit="cover"
       className='h-[80vh] md:h-screen w-full object-cover'
+        
       />
     </div>
     

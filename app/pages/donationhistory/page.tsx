@@ -106,21 +106,27 @@ const DonationHistoryPage = () => {
     return conditionMap[condition.toLowerCase()] || "bg-gray-100 text-gray-800";
   };
 
-  const getCategoryColor = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      fiction: "bg-blue-100 text-blue-800",
-      "non-fiction": "bg-green-100 text-green-800",
-      "science fiction": "bg-purple-100 text-purple-800",
-      fantasy: "bg-yellow-100 text-yellow-800",
-      biography: "bg-orange-100 text-orange-800",
-      history: "bg-red-100 text-red-800",
-      "self-help": "bg-teal-100 text-teal-800",
-      romance: "bg-pink-100 text-pink-800",
-      mystery: "bg-indigo-100 text-indigo-800",
-      thriller: "bg-gray-100 text-gray-800"
-    };
-    return categoryMap[category.toLowerCase()] || "bg-gray-100 text-gray-800";
+const getCategoryColor = (category: string) => {
+  const categoryMap: Record<string, string> = {
+    fiction: "bg-blue-100 text-blue-800",
+    "non-fiction": "bg-green-100 text-green-800",
+    "science fiction": "bg-purple-100 text-purple-800",
+    fantasy: "bg-yellow-100 text-yellow-800",
+    biography: "bg-orange-100 text-orange-800",
+    history: "bg-red-100 text-red-800",
+    "self-help": "bg-teal-100 text-teal-800",
+    romance: "bg-pink-100 text-pink-800",
+    mystery: "bg-indigo-100 text-indigo-800",
+    thriller: "bg-gray-100 text-gray-800",
+    "9th": "bg-sky-100 text-sky-800",
+    "10th": "bg-emerald-100 text-emerald-800",
+    "11th": "bg-lime-100 text-lime-800",
+    "12th": "bg-amber-100 text-amber-800"
   };
+
+  return categoryMap[category.toLowerCase()] || "bg-gray-100 text-gray-800";
+};
+
 
   const togglePolling = () => {
     setPollingEnabled(!pollingEnabled);

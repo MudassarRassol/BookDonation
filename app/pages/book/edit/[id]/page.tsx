@@ -40,10 +40,9 @@ const EditBookPage = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await axios.post(`/api/book/bookdetailsbyid`,{
-          bookId : id
-      }
-      );
+        const response = await axios.post(`/api/book/bookdetailsbyid`, {
+          bookId: id,
+        });
         if (response.data.success) {
           const book = response.data.data;
           setData({
@@ -53,7 +52,7 @@ const EditBookPage = () => {
             description: book.description,
             bookimg: book.bookimg,
             Category: book.Category,
-            bookId : book._id
+            bookId: book._id,
           });
           if (book.bookimg) {
             setImagePreview(book.bookimg);
@@ -138,8 +137,6 @@ const EditBookPage = () => {
       return;
     }
 
-
-
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("author", data.author);
@@ -188,7 +185,7 @@ const EditBookPage = () => {
   if (initialLoading) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-50">
-        <BookLoader/>
+        <BookLoader />
         {/* <p className="mt-4 text-lg text-gray-600">Loading book details...</p> */}
       </div>
     );
@@ -232,7 +229,7 @@ const EditBookPage = () => {
                   </div>
                 </label>
                 <input
-                 title="file"
+                  title="file"
                   onChange={handleFileChange}
                   type="file"
                   id="bookimg"
@@ -298,12 +295,12 @@ const EditBookPage = () => {
                   </div>
                   <div>
                     <select
+                      id="category-select"
                       name="Category"
                       value={data.Category}
                       onChange={handleChange}
                       required
-                      title="category"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className="p-2 border border-gray-300 rounded-md"
                     >
                       <option value="" disabled>
                         Select Book Category
@@ -318,6 +315,10 @@ const EditBookPage = () => {
                       <option value="Romance">Romance</option>
                       <option value="Mystery">Mystery</option>
                       <option value="Thriller">Thriller</option>
+                      <option value="9th">9th</option>
+                      <option value="10th">10th</option>
+                      <option value="11th">11th</option>
+                      <option value="12th">12th</option>
                     </select>
                   </div>
                 </div>

@@ -1,9 +1,17 @@
 'use client';
-
+import mudassarImg from "@/public/WhatsApp Image 2025-06-30 at 11.46.12 AM.jpeg";
+import uzairImg from "@/public/WhatsApp Image 2025-05-09 at 05.44.19_d4e7ce3d.jpg";
+import huzaifaImg from "@/public/WhatsApp Image 2025-05-09 at 11.20.33_39ec9f9e.jpg";
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Head from 'next/head';
 import aboutimg from "@/assests/pexels-rdne-8364640.jpg"
+const team = [
+  { name: 'Mudassar Rasool', role: 'Developer', image: mudassarImg },
+  { name: 'Uzair Afzal', role: 'Documentation', image: uzairImg },
+  { name: 'Huzaifa', role: 'Testing', image: huzaifaImg },
+];
+
 const page = () => {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -81,7 +89,7 @@ const page = () => {
               <motion.div variants={itemVariants}>
                 <h2 className="text-3xl font-bold text-gray-900">Our Story</h2>
                 <p className="mt-4 text-lg text-gray-600">
-                  BookShare was founded in 2023 with a simple mission: to connect book lovers and make reading accessible to everyone. 
+                  BookShare was founded in 2025 with a simple mission: to connect book lovers and make reading accessible to everyone. 
                   What started as a small community initiative has grown into a nationwide platform connecting thousands of donors 
                   with readers in need.
                 </p>
@@ -96,7 +104,7 @@ const page = () => {
                 </p>
               </motion.div>
 
-              <motion.div variants={itemVariants}>
+              {/* <motion.div variants={itemVariants}>
                 <h2 className="text-3xl font-bold text-gray-900">The Impact</h2>
                 <motion.ul 
                   className="mt-4 space-y-3 text-lg text-gray-600"
@@ -121,7 +129,7 @@ const page = () => {
                     <span className="ml-2">Partnered with 50+ schools and libraries</span>
                   </motion.li>
                 </motion.ul>
-              </motion.div>
+              </motion.div> */}
             </motion.div>
           </div>
 
@@ -132,11 +140,7 @@ const page = () => {
           >
             <h2 className="text-3xl font-bold text-gray-900 mb-12">Meet Our Team</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { name: 'Mudassar Rasool', role: 'Developer', image: '/WhatsApp Image 2025-06-30 at 11.46.12 AM.jpeg' },
-                { name: 'Uzair Afzal', role: 'Documentation', image: '/WhatsApp Image 2025-05-09 at 05.44.19_d4e7ce3d.jpg' },
-                { name: 'Huzaifa', role: 'Testing', image: '/WhatsApp Image 2025-05-09 at 11.20.33_39ec9f9e.jpg' },
-              ].map((member, index) => (
+              {team.map((member, index) => (
                 <motion.div
                   key={member.name}
                   initial={{ opacity: 0, y: 20 }}
@@ -160,26 +164,7 @@ const page = () => {
             </div>
           </motion.div>
 
-          {/* CTA Section */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-24 bg-indigo-700 rounded-xl p-8 text-center"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold text-white mb-4">Join Our Movement</h2>
-            <p className="text-xl text-indigo-100 mb-6">
-              Whether you want to donate books or find your next read, {`we'd `} love to have you as part of our community.
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-indigo-700 px-6 py-3 rounded-lg font-bold text-lg shadow-lg"
-            >
-              Get Started Today
-            </motion.button>
-          </motion.div>
+
         </motion.div>
       </div>
     </>

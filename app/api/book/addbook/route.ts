@@ -10,15 +10,20 @@ export async function POST(req: NextRequest) {
     const userId = req.headers.get("userid");
     // Handle FormData
     const formData = await req.formData();
-
+    console.log(formData);
     // Trim all string inputs and validate
     const title = formData.get("title");
-    const author = formData.get("author");
+
     const condition = formData.get("condition");
-    const description = formData.get("description");
+    // const description = formData.get("description") ? formData.get("description") : "";
     const Category = formData.get("Category");
     const city = formData.get("city");
     const bookimg = formData.get("bookimg") as File;
+    const author =
+      formData.get("author")?.toString().trim() || "No author name provided";
+    const description =
+      formData.get("description")?.toString().trim() ||
+      "No description provided";
 
     if (!bookimg) {
       return NextResponse.json(
@@ -27,19 +32,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // const authordata = author ? author  : "No author name provided";
+
     // Upload image
     const imageUrl = await UploadImage(bookimg, "image-upload");
     if (imageUrl) {
       const bookadded = new Book({
         title,
-        author,
         condition,
-        description,
         bookimg: imageUrl,
         userId, // Convert to ObjectId
         status: "Available", // Default status,
         Category,
-        city
+        city,
+        description: description,
+        author: author,
       });
       await bookadded.save();
 
@@ -50,12 +57,12 @@ export async function POST(req: NextRequest) {
         });
 
         await backup.save();
-          
+
         if (backup) {
           return NextResponse.json(
             {
               message: "Book added successfully",
-              book : bookadded,
+              book: bookadded,
             },
             { status: 201 }
           );

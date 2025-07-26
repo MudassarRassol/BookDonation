@@ -12,6 +12,7 @@ interface IUserSchema {
     info?: boolean;
     hi?: string;
     userdetailsId?: mongoose.Schema.Types.ObjectId | null;
+     reportsBy?: mongoose.Schema.Types.ObjectId[]; 
     online?: boolean;
     lastSeen?: Date;
 }
@@ -35,14 +36,20 @@ const userSchema = new mongoose.Schema<IUserSchema>({
         maxlength: 4,
         default: null
     },
-    report: {
-        type: Number,
-        default: 0
+     report: {
+      type: Number,
+      default: 0,
     },
+    reportsBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     account: {
         type: String,
         default: 'active',
-        enum: ['blocked', 'active']
+        enum: ['blocked', 'active','blocked']
     },
     status: {
         type: String,

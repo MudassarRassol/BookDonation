@@ -11,7 +11,7 @@ import { RootState } from "@/app/redux/store";
 import Link from "next/link";
 
 const AddBookPage = () => {
-  const {varify} = useSelector((state : RootState)=>state.user);
+  const { varify } = useSelector((state: RootState) => state.user);
   //   const dispatch = useDispatch();
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -55,9 +55,7 @@ const AddBookPage = () => {
 
     if (
       !data.title ||
-      !data.author ||
       !data.condition ||
-      !data.description ||
       !data.Category ||
       !image
     ) {
@@ -72,24 +70,26 @@ const AddBookPage = () => {
       return;
     }
 
-    if (data.author.length < 3) {
-      setError("Author name must be at least 3 characters");
-      setLoading(false);
-      return;
-    }
+    // if (data.author.length < 3) {
+    //   setError("Author name must be at least 3 characters");
+    //   setLoading(false);
+    //   return;
+    // }
 
-    if (data.description.length < 10) {
-      setError("Description must be at least 10 characters");
-      setLoading(false);
-      return;
-    }
+    // if (data.description.length < 10) {
+    //   setError("Description must be at least 10 characters");
+    //   setLoading(false);
+    //   return;
+    // }
 
     const formData = new FormData();
     formData.append("title", data.title);
-    formData.append("author", data.author);
+    // formData.append("author", data?.author);
     formData.append("condition", data.condition);
-    formData.append("description", data.description);
+    // formData.append("description", data?.description);
     formData.append("Category", data.Category);
+    if (data.author) formData.append("author", data.author);
+if (data.description) formData.append("description", data.description);
     const city = localStorage.getItem("city") || ""; // Fallback to an empty string if null
     formData.append("city", city);
     if (image) {
@@ -128,9 +128,15 @@ const AddBookPage = () => {
   };
 
   return (
-    <div className={` w-full h-auto  md:h-[100vh] flex items-center justify-center`}>
+    <div
+      className={` w-full h-auto  md:h-[100vh] flex items-center justify-center`}
+    >
       <Toaster position="top-right" reverseOrder={false} />
-      <div className={`${varify === "non-verified" ? ' hidden ' : '' }  w-full md:w-[70%]    flex  flex-col md:flex-row border-b-2 p-4 shadow-2xl`}>
+      <div
+        className={`${
+          varify === "non-verified" ? " hidden " : ""
+        }  w-full md:w-[70%]    flex  flex-col md:flex-row border-b-2 p-4 shadow-2xl`}
+      >
         {/* Book Image Upload */}
         <div className="m-auto relative mb-4 overflow-hidden w-full">
           <Avatar
@@ -180,15 +186,16 @@ const AddBookPage = () => {
           <Input
             name="author"
             type="text"
-            placeholder="Author Name"
+            placeholder="Author Name (optional)"
             value={data.author}
             onChange={handleChange}
-            required
-            length={3}
-            // minLength={3}
+            required = {false}
           />
 
-          <label htmlFor="category-select" className="hidden text-sm font-medium text-gray-700">
+          <label
+            htmlFor="category-select"
+            className="hidden text-sm font-medium text-gray-700"
+          >
             Book Category
           </label>
           <select
@@ -212,9 +219,16 @@ const AddBookPage = () => {
             <option value="Romance">Romance</option>
             <option value="Mystery">Mystery</option>
             <option value="Thriller">Thriller</option>
+            <option value="9th">9th</option>
+            <option value="10th">10th</option>
+            <option value="11th">11th</option>
+            <option value="12th">12th</option>
           </select>
 
-          <label htmlFor="condition-select" className="hidden text-sm font-medium text-gray-700">
+          <label
+            htmlFor="condition-select"
+            className="hidden text-sm font-medium text-gray-700"
+          >
             Book Condition
           </label>
           <select
@@ -238,10 +252,10 @@ const AddBookPage = () => {
             name="description"
             value={data.description}
             onChange={handleChange}
-            placeholder="Book Description"
-            required
+            placeholder="Book Description (optional)"
             minLength={10}
             className="p-2 border border-gray-300 rounded-md h-28"
+            required={false}
           />
 
           {error && <div className="text-red-500 text-sm">{error}</div>}
@@ -254,9 +268,12 @@ const AddBookPage = () => {
           />
         </form>
       </div>
-      <div className={` ${ varify === 'non-verified' ? '' : 'hidden' } `} >
-        <Link href={'/pages/profile'} className=" text-blue-700 cursor-pointer " >
-        Pls Varify Account For Add Book
+      <div className={` ${varify === "non-verified" ? "" : "hidden"} `}>
+        <Link
+          href={"/pages/profile"}
+          className=" text-blue-700 cursor-pointer "
+        >
+          Pls Varify Account For Add Book
         </Link>
       </div>
     </div>
