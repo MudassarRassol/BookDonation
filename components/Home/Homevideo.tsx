@@ -1,4 +1,4 @@
-import React, { lazy } from 'react'
+import React from 'react'
 import Video from '@/components/Home/Video'
 import Image from 'next/image'
 import mobilescrenn from "@/assests/StockCake-Books Awaiting Readers_1743162504.jpg"

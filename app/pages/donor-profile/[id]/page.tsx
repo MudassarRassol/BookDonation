@@ -6,7 +6,6 @@ import BookCard from "@/components/Card/BookCard";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import BookLoader from "@/components/Loader/Loader";
-import { Button } from "antd";
 import { RootState } from "@/app/redux/store";
 import { useSelector } from "react-redux";
 
@@ -33,7 +32,6 @@ interface Book {
 }
 
 const DonorProfilePage = () => {
-  const { login, userid } = useSelector((state: RootState) => state.user);
   const { id } = useParams() as { id?: string };
   const [userData, setUserData] = useState<{
     success: boolean;
