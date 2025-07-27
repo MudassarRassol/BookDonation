@@ -29,7 +29,7 @@ GMAIL_PASS = Your Email Pass Key (Search Google How to get Pass Key)
 
 If you Need Any Help 
 
-Contact Me On Whatspp : +923110758376
+Contact Me On Whatsapp : +923110758376
 
 ## Getting Started
 
