@@ -15,7 +15,21 @@ A full-stack web application to donate and request books, built using Next.js, M
 ### 🛠️ Tech Stack
 Next.js | MongoDB | Tailwind CSS | Node.js
 
+Important
 
+First Create file name is     .env       after that paste these key in .env file
+
+MONGODB_URI  = Create A data in mongodb altas and paste their connecting link heir
+NEXT_PUBLIC_CLOUDINARY_NAME = Create Account CLOUDINARY and in api key your CLOUDINARY Name paste here
+NEXT_PUBLIC_CLOUDINARY_API_KEY = Create Account CLOUDINARY and in api key your CLOUDINARY Api Key paste here
+CLOUDINARY_API_SECRET = Create Account CLOUDINARY and in api key your CLOUDINARY API SECRET Key paste here
+JWT_SECRET = BookDonation  (If you want to change , You Can Change It )
+GMAIL_USER = Your Email 
+GMAIL_PASS = Your Email Pass Key (Search Google How to get Pass Key)
+
+If you Need Any Help 
+
+Contact Me On Whatspp : +923110758376
 
 ## Getting Started
 
