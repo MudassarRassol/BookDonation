@@ -6,8 +6,6 @@ import BookCard from "@/components/Card/BookCard";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import BookLoader from "@/components/Loader/Loader";
-import { RootState } from "@/app/redux/store";
-import { useSelector } from "react-redux";
 
 interface UserDetails {
   profilephoto: string;
