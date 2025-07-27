@@ -101,7 +101,7 @@ const RequestsPage = () => {
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
             );
             const address = response.data.display_name || "Current location";
-            
+
             setUserLocation({
               latitude,
               longitude,
@@ -109,7 +109,7 @@ const RequestsPage = () => {
             });
 
             form.setFieldsValue({
-              location: address
+              location: address,
             });
           } catch (error) {
             console.error("Error getting address:", error);
@@ -119,7 +119,7 @@ const RequestsPage = () => {
               address: null,
             });
             form.setFieldsValue({
-              location: "Current location (address not available)"
+              location: "Current location (address not available)",
             });
           } finally {
             setLocationLoading(false);
@@ -150,7 +150,7 @@ const RequestsPage = () => {
           // Validate all form fields
           await form.validateFields();
         } catch (err) {
-          console.log(err)
+          console.log(err);
           // Validation will automatically show error messages
           setIsProcessing(false);
           return; // Don't proceed if validation fails
@@ -196,7 +196,7 @@ const RequestsPage = () => {
           formData.append("pickupLocation", values.location);
           formData.append("pickupDate", values.date.format("YYYY-MM-DD"));
           formData.append("pickupTime", values.time.format("HH:mm"));
-          
+
           if (userLocation.latitude && userLocation.longitude) {
             formData.append("latitude", userLocation.latitude.toString());
             formData.append("longitude", userLocation.longitude.toString());
@@ -269,6 +269,11 @@ const RequestsPage = () => {
     return (
       <div className="text-center py-8 h-[100vh] flex justify-center items-center flex-col">
         <h2 className="text-xl font-semibold md:mt-20">No requests found</h2>
+        <h2 className="text-xl font-semibold md:mt-4">
+          Once your request is approved by the donor, their address and the
+          pickup time will be sent to your email.
+        </h2>
+
         <Image
           src={im}
           alt="hand-drawn-no-data-concept.png"
@@ -283,6 +288,7 @@ const RequestsPage = () => {
             >
               Browse books to make a request
             </Link>
+
             <Link
               href="/pages/donationhistory"
               className="text-red-500 hover:underline"
@@ -343,14 +349,16 @@ const RequestsPage = () => {
               name="location"
               label="Pickup Location"
               rules={[
-                { 
-                  required: true, 
-                  message: "Please enter pickup location" 
+                {
+                  required: true,
+                  message: "Please enter pickup location",
                 },
                 {
                   validator(_, value) {
                     if (!value || value.trim().length === 0) {
-                      return Promise.reject(new Error("Please enter a valid pickup location"));
+                      return Promise.reject(
+                        new Error("Please enter a valid pickup location")
+                      );
                     }
                     return Promise.resolve();
                   },
@@ -358,9 +366,12 @@ const RequestsPage = () => {
               ]}
             >
               <div className="flex gap-2">
-                <Input placeholder="Enter the pickup address" />
-                <Button 
-                  type="default" 
+                <Input
+                  placeholder="Enter the pickup address"
+                  required={false}
+                />
+                <Button
+                  type="default"
                   onClick={getLocation}
                   loading={locationLoading}
                   icon={<EnvironmentOutlined />}
@@ -372,7 +383,10 @@ const RequestsPage = () => {
                 <div className="mt-2 text-sm text-green-600">
                   <p>Detected location: {userLocation.address}</p>
                   {userLocation.latitude && userLocation.longitude && (
-                    <p>Coordinates: {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}</p>
+                    <p>
+                      Coordinates: {userLocation.latitude.toFixed(4)},{" "}
+                      {userLocation.longitude.toFixed(4)}
+                    </p>
                   )}
                 </div>
               )}
@@ -383,9 +397,9 @@ const RequestsPage = () => {
                 name="date"
                 label="Pickup Date"
                 rules={[
-                  { 
-                    required: true, 
-                    message: "Please select pickup date" 
+                  {
+                    required: true,
+                    message: "Please select pickup date",
                   },
                   () => ({
                     validator(_, value) {
@@ -411,22 +425,18 @@ const RequestsPage = () => {
                 name="time"
                 label="Pickup Time"
                 rules={[
-                  { 
-                    required: true, 
-                    message: "Please select pickup time" 
+                  {
+                    required: true,
+                    message: "Please select pickup time",
                   },
                 ]}
               >
-                <TimePicker 
-                  className="w-full" 
-                  format="HH:mm" 
-                  minuteStep={15}
-                />
+                <TimePicker className="w-full" format="HH:mm" minuteStep={15} />
               </Form.Item>
             </div>
 
-            <Form.Item 
-              name="message" 
+            <Form.Item
+              name="message"
               label="Message to Recipient (Optional)"
               rules={[
                 {
