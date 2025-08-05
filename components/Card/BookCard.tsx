@@ -10,7 +10,7 @@ interface UserInfo {
   profilephoto: string;
 }
 
-interface BookCardProps {
+interface BookCardProps    {
   book: {
     _id: string;
     title: string;
