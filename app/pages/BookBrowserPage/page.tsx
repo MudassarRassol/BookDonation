@@ -251,7 +251,7 @@ const BookBrowserPage = () => {
               <>
                 <Row gutter={[16, 16]}  >
                   {books.map((book) => (
-                    <Col key={book._id} xs={24} sm={12} md={8} lg={6}>
+                    <Col key={book._id} xs={24} sm={12} md={8} lg={6}  xxl={4} >
                       <Card
                         hoverable
                         cover={
@@ -262,7 +262,7 @@ const BookBrowserPage = () => {
                               height="100%"
                               width="100%"
                               style={{ objectFit: 'cover' }}
-                              preview={false}
+                              preview={true}
                             />
                           </div>
                         }

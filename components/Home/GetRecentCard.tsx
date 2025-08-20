@@ -126,7 +126,7 @@ const GetRecentBOOK = () => {
       </div>
 
       {/* Desktop View - Grid Layout */}
-      <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6  gap-6">
         {books.map((book, index) => (
           <BookCard key={index} book={book} />
         ))}

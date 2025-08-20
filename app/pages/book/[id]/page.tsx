@@ -28,7 +28,7 @@ import {
 import BookLoader from "@/components/Loader/Loader";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store";
-import Image from "next/image";
+import { Image } from "antd";
 import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -429,10 +429,10 @@ export default function BookDetailsPage() {
                 <Image
                   src={book.bookimg || "/book-placeholder.jpg"}
                   alt={book.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority
+                  className="  object-fill h-full w-full  "
+                  width={'100%'}
+                  height={'100%'}
+                  preview={true}
                 />
               </div>
             </div>
