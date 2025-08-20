@@ -51,6 +51,7 @@ const DonorProfilePage = () => {
           donorId: id,
         });
         setUserData(response.data);
+        console.log("response.data", response.data);
       } catch (error) {
         console.error("Error fetching donor data:", error);
         setUserData({
@@ -64,6 +65,8 @@ const DonorProfilePage = () => {
 
     fetchDonorData();
   }, [id]);
+
+
 
   if (!id) {
     return (
@@ -88,6 +91,8 @@ const DonorProfilePage = () => {
       </div>
     );
   }
+
+    console.log("userData", userData);
 
   const { userDetails, donorbooks } = userData;
 
@@ -204,10 +209,17 @@ const DonorProfilePage = () => {
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-gray-800">
-                      {donorbooks?.filter((book) => book.status === "available")
+                      {donorbooks?.filter((book) => book.status === "Available")
                         .length || 0}
                     </p>
                     <p className="text-xs text-gray-500">Available Now</p>
+                  </div>
+                                    <div className="text-center">
+                    <p className="text-2xl font-bold text-gray-800">
+                      {donorbooks?.filter((book) => book.status === "Not Available")
+                        .length || 0}
+                    </p>
+                    <p className="text-xs text-gray-500">Donated Book</p>
                   </div>
                 </div>
               </div>

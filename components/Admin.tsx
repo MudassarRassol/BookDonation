@@ -53,7 +53,7 @@ export default function AdminDashboard() {
       const response = await axios.delete('/api/auth/logout');
       if (response.status === 200) {
          dispatch(clearLocalStorage());
-        router.push('/');
+          router.push('/');
       }
     } catch (error) {
       console.error('Logout error:', error);

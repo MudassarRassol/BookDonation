@@ -53,13 +53,20 @@ const Page = () => {
 
         const role = response.data.res.role;
         if (role === "admin") {
+          dispatch(setLogin(true));
+          dispatch(setUserId(response.data.user.userId));
+          dispatch(setVarify(response.data.user.varify));
+          dispatch(setInfo(response.data.user.info));
+          dispatch(setImage(response.data.res.profilephoto));
+          dispatch(setRole(response.data.res.role));
+          dispatch(setCity(response.data.res.city));
           router.push("/pages/admin");
-        }
-
-        dispatch(setLogin(true));
+        } else {
+                  dispatch(setLogin(true));
         dispatch(setUserId(response.data.user.userId));
         dispatch(setVarify(response.data.user.varify));
         dispatch(setInfo(response.data.user.info));
+        router.push('/')
 
         if (response.data.user.info === false) {
           router.push("/pages/userdetails/get-user-details");
@@ -67,6 +74,7 @@ const Page = () => {
           dispatch(setImage(response.data.res.profilephoto));
           dispatch(setRole(response.data.res.role));
           dispatch(setCity(response.data.res.city));
+        }
         }
       }
     } catch (err: unknown) {
