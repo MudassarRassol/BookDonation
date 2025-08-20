@@ -429,7 +429,7 @@ export default function BookDetailsPage() {
                 <Image
                   src={book.bookimg || "/book-placeholder.jpg"}
                   alt={book.title}
-                  className="  object-fill h-full w-full  "
+                  className=" object-cover  h-full w-full  "
                   width={'100%'}
                   height={'100%'}
                   preview={true}
