@@ -44,7 +44,7 @@ const Video = () => {
   return (
     <div className="w-full h-[100vh] bg-black bg-opacity-20  ">
       <CldVideoPlayer
-        src="Library_B-Roll_Sequence_ufkpyi"
+        src="Untitled_design_j9mxyr"
         autoPlay={true}
         muted={true}
         loop={true}
